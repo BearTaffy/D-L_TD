@@ -1,12 +1,3 @@
-import viz
-import vizshape
-import vizcam
-import vizact
-import vizmat
-import vizinfo
-import random
-import math
-
 # TODO: refactor code into separate files
 # TODO: camera/player
 # TODO: add creeps
@@ -20,6 +11,17 @@ import math
 # TODO: make tower attack creeps
 # ? for wizrad tower make bolt have a light that folows it
 
+import viz
+import vizshape
+import vizcam
+import vizact
+import vizmat
+import vizinfo
+import random
+import math
+
+
+
 
 # Environment
 mapp = viz.add("models/map.obj")
@@ -31,7 +33,23 @@ day.renderToBackground()
 
 # Variables
 camMode = "robot"
+wood_count = 0
+stone_count = 0
 
+
+# Create text for resource counters
+wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.1, 0.9, 0], parent=viz.SCREEN)
+wood_text.fontSize(20)
+wood_text.color(viz.WHITE)
+
+stone_text = viz.addText(f"Stone: {stone_count}", pos=[0.1, 0.85, 0], parent=viz.SCREEN)
+stone_text.fontSize(20)
+stone_text.color(viz.WHITE)
+
+# Function to update resource display
+def update_resources():
+    wood_text.message(f"Wood: {wood_count}")
+    stone_text.message(f"Stone: {stone_count}")
 
 towderCoordinates = [
     [12.7, -1.0, 1.1],
@@ -140,6 +158,17 @@ dir_light.direction(0, -1, 0)
 dir_light.intensity(0.5)
 
 viz.callback(viz.KEYDOWN_EVENT, onKeyDown)
+
+
+# def AddSensor(shape,name):
+# 	sensor = vizproximity.Sensor(shape,None)
+# 	sensor.name = name
+# 	manager.addSensor(sensor)
+
+# # Add circle area
+# shape = vizproximity.CircleArea(0.5,center=[0,2])
+# AddSensor(shape,'Circle')
+
 
 if __name__ == "__main__":
     viz.go()
