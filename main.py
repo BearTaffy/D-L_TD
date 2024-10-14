@@ -31,6 +31,7 @@ day.renderToBackground()
 
 # Variables
 camMode = "robot"
+towersPlaces = []
 
 
 towderCoordinates = [
@@ -69,8 +70,10 @@ towderCoordinates = [
 ]
 
 for coord in towderCoordinates:
-    cube = vizshape.addCube(size=0.5)
-    cube.setPosition(coord)
+    towersPlace = vizshape.addCube(size=0.5)
+    towersPlace.setPosition(coord)
+    towersPlace.alpha(0)
+    towersPlaces.append({"towersPlace": towersPlace, "isPlaced": False, "tower": None})
 
 # Models
 robot = viz.add("models/robot.obj")
@@ -121,12 +124,22 @@ def changeCamera():
         viewLink = viz.link(downCam, viz.MainView)
         viewLink.preEuler([0, 90, 0])
         camMode = "downCam"
+        for towersPlace in towersPlaces[:]:
+            obj = towersPlace["towersPlace"]
+            towerPlaced = towersPlace["isPlaced"]
+            whichTower = towersPlace["tower"]
+
+            obj.alpha(1)
+
     else:
         viewLink = viz.link(robot, viz.MainView)
         viewLink.preEuler([0, 45, 0])
         viewLink.preTrans([0, 0, -3])
         viewLink.preEuler([0, -20, 0])
         camMode = "robot"
+        for towersPlace in towersPlaces[:]:
+            obj = towersPlace["towersPlace"]
+            obj.alpha(0)
 
 
 # Lights
