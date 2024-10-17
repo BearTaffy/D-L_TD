@@ -23,6 +23,8 @@ import vizproximity
 
 
 
+# ? when selected tower make tower follow cursor and when clicked place tower if in area of a tower place
+
 # Environment
 mapp = viz.add("models/map.obj")
 mapp.setPosition(0, -1, 0)
@@ -57,6 +59,9 @@ def update_resources():
     
 
 
+# Variables
+camMode = "robot"
+towersPlaces = []
 towderCoordinates = [
     [12.7, -1.0, 1.1],
     [10.6, -1.0, 5.0],
@@ -92,15 +97,10 @@ towderCoordinates = [
     [-2.8, -1.0, -6.7],
 ]
 
-for coord in towderCoordinates:
-    cube = vizshape.addCube(size=0.5)
-    cube.setPosition(coord)
+currentObject = None
 
 # Models
 robot = viz.add("models/robot.obj")
-# golem = viz.add("models/big_golem.obj")
-# robot.alpha(0)
-
 robot.setPosition([-1, -1, 2])
 robot.setScale([0.1, 0.1, 0.1])
 robot.setEuler([0, 0, 0])
@@ -143,7 +143,7 @@ def AddSensor(shape, name):
 shape = vizproximity.CircleArea(3, center=[-8.21, -7.7])
 AddSensor(shape, 'Circle')
 
-# Screen
+# Screen setup
 viz.setMultiSample(4)
 viz.fov(90)
 viz.go(viz.FULLSCREEN)
@@ -152,6 +152,16 @@ viz.clearcolor(viz.SKYBLUE)
 viz.mouse.setVisible(True)
 viz.mouse.setTrap(viz.ON)
 viz.mouse.setOverride(viz.ON)
+
+# Lights
+head_light = viz.MainView.getHeadLight()
+viz.MainView.getHeadLight().disable()
+head_light.intensity(0.5)
+
+dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 135, 0))
+dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 0, 45))
+dir_light.direction(0, -1, 0)
+dir_light.intensity(0.5)
 
 # Cam/Movement
 navigator = vizcam.addWalkNavigate(moveScale=2.0)
@@ -169,39 +179,102 @@ viewLink.preEuler([0, -20, 0])
 robotLink = viz.link(navigator, robot)
 robotLink.postTrans([0, -1, 1])
 
+for coord in towderCoordinates:
+    towersPlace = vizshape.addCube(size=0.5)
+    towersPlace.setPosition(coord)
+    towersPlace.alpha(0)
+    towersPlaces.append({"towersPlace": towersPlace, "isPlaced": False, "tower": None})
+
 
 def onKeyDown(key):
+    global currentObject, camMode
     if key == "q":
         changeCamera()
-    if key == " ":
+    elif key == " ":
         print(robot.getPosition())
+    elif camMode == "downCam":
+        if key in ["1", "2", "3"]:
+            if currentObject:
+                currentObject.remove()
+            if key == "1":
+                currentObject = vizshape.addCube(size=0.5, color=viz.RED)
+            elif key == "2":
+                currentObject = vizshape.addSphere(radius=0.25, color=viz.GREEN)
+            elif key == "3":
+                currentObject = vizshape.addCylinder(
+                    height=0.5, radius=0.25, color=viz.BLUE
+                )
+            currentObject.visible(viz.ON)
+            updateObjectPosition()
 
 
 def changeCamera():
-    global camMode
+    global camMode, currentObject
     if camMode == "robot":
         viewLink = viz.link(downCam, viz.MainView)
         viewLink.preEuler([0, 90, 0])
         camMode = "downCam"
+        for towersPlace in towersPlaces:
+            towersPlace["towersPlace"].alpha(1)
     else:
         viewLink = viz.link(robot, viz.MainView)
         viewLink.preEuler([0, 45, 0])
         viewLink.preTrans([0, 0, -3])
         viewLink.preEuler([0, -20, 0])
         camMode = "robot"
+        for towersPlace in towersPlaces:
+            towersPlace["towersPlace"].alpha(0)
+        if currentObject:
+            currentObject.remove()
+            currentObject = None
 
 
-# Lights
-head_light = viz.MainView.getHeadLight()
-viz.MainView.getHeadLight().disable()
-head_light.intensity(0.5)
+def intersect(lineStart, lineEnd, planePoint, planeNormal):
+    lineDir = viz.Vector(lineEnd) - viz.Vector(lineStart)
+    lineDir.normalize()
+    planeNormal = viz.Vector(planeNormal)
+    planeNormal.normalize()
 
-dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 135, 0))
-dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 0, 45))
-dir_light.direction(0, -1, 0)
-dir_light.intensity(0.5)
+    linePoint = viz.Vector(lineStart) - viz.Vector(planePoint)
+    linePointOfDir = -planeNormal.dot(linePoint) / planeNormal.dot(lineDir)
+    intersection = viz.Vector(lineStart) + linePointOfDir * lineDir
+    return intersection
+
+
+def updateObjectPosition():
+    global currentObject
+    if currentObject and camMode == "downCam":
+        mouseState = viz.mouse.getPosition()
+        line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
+        planePoint = [0, -1, 0]
+        planeNormal = [0, 1, 0]
+
+        intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
+
+        if intersectionPoint:
+            currentObject.setPosition(intersectionPoint)
+
+
+def onMouseDown(button):
+    global currentObject
+    if button == viz.MOUSEBUTTON_LEFT:
+        for towersPlace in towersPlaces:
+            if not towersPlace["isPlaced"]:
+                tower_position = towersPlace["towersPlace"].getPosition()
+                if (
+                    currentObject
+                    and vizmat.Distance(tower_position, currentObject.getPosition())
+                    < 0.5
+                ):
+                    towersPlace["isPlaced"] = True
+                    towersPlace["tower"] = currentObject
+                    currentObject = None
+                    break
+
 
 viz.callback(viz.KEYDOWN_EVENT, onKeyDown)
+viz.callback(viz.MOUSEDOWN_EVENT, onMouseDown)
+vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
 
 
 
