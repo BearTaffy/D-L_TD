@@ -25,6 +25,10 @@ stone = viz.add("models/environment/rock_formation.obj")
 stone.setPosition(-8.87, -0.8, 7.08)
 stone.setScale([0.5, 0.5, 0.5])
 
+portal = viz.add("models/environment/portal.obj")
+portal.setPosition(19, -0.8, -1.7)
+portal.setScale([0.5, 0.5, 0.5])
+
 # Proximity manager setup
 manager = vizproximity.Manager()
 manager.setDebug(True)
