@@ -237,13 +237,17 @@ def onKeyDown(key):
             if currentObject:
                 currentObject.remove()
             if key == "1":
-                currentObject = vizshape.addCube(size=0.5, color=viz.RED)
+                currentObject = viz.add("models/archer_tower.obj")
+                currentObject.setScale([0.2, 0.2, 0.2])
+                currentObject.setEuler([0, 0, 0])
             elif key == "2":
-                currentObject = vizshape.addSphere(radius=0.25, color=viz.GREEN)
+                currentObject = viz.add("models/canon.obj")
+                currentObject.setScale([0.25, 0.25, 0.25])
+                currentObject.setEuler([0, 0, 0])
             elif key == "3":
-                currentObject = vizshape.addCylinder(
-                    height=0.5, radius=0.25, color=viz.BLUE
-                )
+                currentObject = viz.add("models/wizard_tower.obj")
+                currentObject.setScale([0.2, 0.2, 0.2])
+                currentObject.setEuler([0, 0, 0])
             currentObject.visible(viz.ON)
             updateObjectPosition()
 
