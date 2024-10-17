@@ -1,31 +1,37 @@
 # D-L_TD
 
-# TODO: refactor code into separate files
+## TODO
 
-# TODO: camera/player
+```
+refactor code into separate files
 
-# TODO: add creeps
+camera/player
 
-# TODO: add creep pathing
+add creeps
 
-# TODO: material collection minigame
+add creep pathing
 
-# TODO: add sound
+material collection minigame
 
-# TODO: make tower placement
+add sound
 
-# When in downCam show green square where tower can be placed
+make tower placement
 
-# prob a dict with values like cords and is tower placed
+When in downCam show green square where tower can be placed
 
-# TODO: add tower removal
+prob a dict with values like cords and is tower placed
 
-# TODO: make tower attack creeps
+add tower removal
 
-# ? for wizrad tower make bolt have a light that folows it
+make tower attack creeps
 
-# ? when selected tower make tower follow cursor and when clicked place tower if in area of a tower place
+? for wizrad tower make bolt have a light that folows it
+
+? when selected tower make tower follow cursor and when clicked place tower if in area of a tower place
+```
 
 # Bugs
 
-## going in and out of collection areas gives more resaurces
+```
+going in and out of collection areas gives more resaurces
+```
