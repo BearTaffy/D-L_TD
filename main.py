@@ -106,33 +106,41 @@ robot.setScale([0.1, 0.1, 0.1])
 robot.setEuler([0, 0, 0])
 
 def add_wood():
-    global wood_count
-    wood_count += 1
-    update_resources()
+    global wood_count, collecting_wood
+    if collecting_wood:  
+        wood_count += 1
+        update_resources()
+    
+
 
 # Proximity manager setup
 manager = vizproximity.Manager()
 manager.setDebug(True)
 manager.addTarget(vizproximity.Target(robot))
-
+wood_timer = None
 # Enter sensor function
 def onEnterSensor(e):
     global collecting_wood
     if e.sensor.name == 'Circle':
         viz.logNotice('Entered wood collection area')
-        collecting_wood = True
-        # Start collecting wood every 2 seconds
-        vizact.ontimer2(2, 0, add_wood)  # Repeats every 2 seconds
+        collecting_wood= True
+        wood_timer = vizact.ontimer2(2, 0, add_wood) 
+        
 
 # Exit sensor function
 def onExitSensor(e):
-    global collecting_wood
+    global collecting_wood, wood_timer
     if e.sensor.name == 'Circle':
-        viz.logNotice('Exited wood collection area')
+        viz.logNotice('Left wood collection area')
         collecting_wood = False
+        if wood_timer:
+            wood_timer.remove()
+            wood_timer = None
 
+# Add proximity event callbacks
 manager.onEnter(None, onEnterSensor)
 manager.onExit(None, onExitSensor)
+
 
 def AddSensor(shape, name):
     sensor = vizproximity.Sensor(shape, None)
