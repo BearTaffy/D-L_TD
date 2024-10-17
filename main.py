@@ -128,7 +128,7 @@ def start_collecting_wood():
         if collecting_stone:
             add_wood()
     vizact.ontimer(2, wood_timer)
-    vizact.ontimer(2, stone_timer)
+    vizact.ontimer(3, stone_timer)
 
 
 # Proximity manager setup
