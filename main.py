@@ -19,7 +19,7 @@ import vizmat
 import vizinfo
 import random
 import math
-
+import vizproximity
 
 
 
@@ -30,12 +30,16 @@ mapp.setPosition(0, -1, 0)
 day = viz.add("sky_day.osgb")
 day.renderToBackground()
 
+tree=viz.add("models/tree.obj")
+tree.setPosition(-8.4,-1,-7.7)
+tree.setScale([0.5, 0.5, 0.5])
+
 
 # Variables
 camMode = "robot"
 wood_count = 0
 stone_count = 0
-
+collecting_wood = False
 
 # Create text for resource counters
 wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.1, 0.9, 0], parent=viz.SCREEN)
@@ -50,6 +54,8 @@ stone_text.color(viz.WHITE)
 def update_resources():
     wood_text.message(f"Wood: {wood_count}")
     stone_text.message(f"Stone: {stone_count}")
+    
+
 
 towderCoordinates = [
     [12.7, -1.0, 1.1],
@@ -98,6 +104,44 @@ robot = viz.add("models/robot.obj")
 robot.setPosition([-1, -1, 2])
 robot.setScale([0.1, 0.1, 0.1])
 robot.setEuler([0, 0, 0])
+
+def add_wood():
+    global wood_count
+    wood_count += 1
+    update_resources()
+
+# Proximity manager setup
+manager = vizproximity.Manager()
+manager.setDebug(True)
+manager.addTarget(vizproximity.Target(robot))
+
+# Enter sensor function
+def onEnterSensor(e):
+    global collecting_wood
+    if e.sensor.name == 'Circle':
+        viz.logNotice('Entered wood collection area')
+        collecting_wood = True
+        # Start collecting wood every 2 seconds
+        vizact.ontimer2(2, 0, add_wood)  # Repeats every 2 seconds
+
+# Exit sensor function
+def onExitSensor(e):
+    global collecting_wood
+    if e.sensor.name == 'Circle':
+        viz.logNotice('Exited wood collection area')
+        collecting_wood = False
+
+manager.onEnter(None, onEnterSensor)
+manager.onExit(None, onExitSensor)
+
+def AddSensor(shape, name):
+    sensor = vizproximity.Sensor(shape, None)
+    sensor.name = name
+    manager.addSensor(sensor)
+
+# Add circular sensor around the tree
+shape = vizproximity.CircleArea(3, center=[-8.21, -7.7])
+AddSensor(shape, 'Circle')
 
 # Screen
 viz.setMultiSample(4)
@@ -160,14 +204,9 @@ dir_light.intensity(0.5)
 viz.callback(viz.KEYDOWN_EVENT, onKeyDown)
 
 
-# def AddSensor(shape,name):
-# 	sensor = vizproximity.Sensor(shape,None)
-# 	sensor.name = name
-# 	manager.addSensor(sensor)
 
-# # Add circle area
-# shape = vizproximity.CircleArea(0.5,center=[0,2])
-# AddSensor(shape,'Circle')
+
+
 
 
 if __name__ == "__main__":
