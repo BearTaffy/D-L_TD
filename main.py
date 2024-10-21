@@ -13,7 +13,7 @@ day = viz.add("sky_day.osgb")
 day.renderToBackground()
 
 portal = viz.add("models/environment/portal.obj")
-portal.setPosition(19, -0.8, -1)
+portal.setPosition(19, -0.8, 0.5)
 portal.setScale([0.5, 0.5, 0.5])
 
 # Screen setup
