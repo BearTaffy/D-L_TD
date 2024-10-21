@@ -1,8 +1,10 @@
 import viz
 import vizshape
 import vizmat
+import vizact
 
 from camera import changeCamera, downCam, robot, camMode
+from creeps import creeps
 from resources import set_resource_update_callback
 from resources import wood_count, stone_count
 
@@ -204,6 +206,19 @@ def onKeyDown(key):
                 currentObject.setEuler([0, 0, 0])
             currentObject.visible(viz.ON)
             updateObjectPosition()
+            vizact.onupdate(0, attackCreeps)
+
+
+def attackCreeps():
+    for towersPlace in towersPlaces:
+        if towersPlace["isPlaced"] and towersPlace["tower"]:
+            towerPos = towersPlace["tower"].getPosition()
+            for creep in creeps:
+                creepPos = creep.model.getPosition()
+                distance = vizmat.Distance(towerPos, creepPos)
+                if distance < 5:
+                    creep.take_damage(1)
+                    break
 
 
             

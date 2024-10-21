@@ -7,23 +7,23 @@ refactor code into separate files
 
 camera/player
 
-add creeps
+*add creeps*
 
-add creep pathing
+*add creep pathing*
 
 material collection minigame
 
 add sound
 
-make tower placement
+*make tower placement*
 
 When in downCam show green square where tower can be placed
 
-prob a dict with values like cords and is tower placed
-
 add tower removal
 
-make tower attack creeps
+*make tower attack creeps*
+
+make towers shoot objects
 
 ? for wizrad tower make bolt have a light that folows it
 
