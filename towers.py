@@ -3,8 +3,11 @@ import vizshape
 import vizmat
 
 from camera import changeCamera, downCam, robot, camMode
+from resources import set_resource_update_callback
+from resources import wood_count, stone_count
 
 towersPlaces = []
+tower_icons = []
 currentObject = None
 
 towerCoordinates = [
@@ -42,9 +45,9 @@ towerCoordinates = [
     [-2.8, -1.0, -6.7],
 ]
 
-from resources import wood_count, stone_count
 
-tower_icons = []
+
+
 
 def check_resources():
     required_wood = 5
@@ -87,9 +90,8 @@ def updateTowerIcons():
             icon.alpha(0.5)  # Make it semi-transparent if there are not enough resources
 
 
-from resources import set_resource_update_callback
 
-set_resource_update_callback(updateTowerIcons)
+
 
 for coord in towerCoordinates:
     towersPlace = vizshape.addCube(size=0.5)
@@ -202,3 +204,7 @@ def onKeyDown(key):
                 currentObject.setEuler([0, 0, 0])
             currentObject.visible(viz.ON)
             updateObjectPosition()
+
+
+            
+set_resource_update_callback(updateTowerIcons)
