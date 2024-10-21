@@ -1,8 +1,10 @@
 import viz
 import vizshape
 import vizmat
+import vizact
 
 from camera import changeCamera, downCam, robot, camMode
+from creeps import creeps
 
 towersPlaces = []
 currentObject = None
@@ -138,3 +140,16 @@ def onKeyDown(key):
                 currentObject.setEuler([0, 0, 0])
             currentObject.visible(viz.ON)
             updateObjectPosition()
+            vizact.onupdate(0, attack_creeps)
+
+
+def attack_creeps():
+    for towersPlace in towersPlaces:
+        if towersPlace["isPlaced"] and towersPlace["tower"]:
+            tower_pos = towersPlace["tower"].getPosition()
+            for creep in creeps:
+                creep_pos = creep.model.getPosition()
+                distance = vizmat.Distance(tower_pos, creep_pos)
+                if distance < 5:
+                    creep.take_damage(1)
+                    break
