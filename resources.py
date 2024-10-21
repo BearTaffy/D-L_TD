@@ -36,7 +36,7 @@ def update_resources():
     wood_text.message(f"Wood: {wood_count}")
     stone_text.message(f"Stone: {stone_count}")
     if resource_update_callback:
-        resource_update_callback()
+        resource_update_callback()  
 
 # Proximity manager setup
 manager = vizproximity.Manager()

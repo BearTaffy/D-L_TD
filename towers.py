@@ -44,35 +44,51 @@ towerCoordinates = [
 
 from resources import wood_count, stone_count
 
+tower_icons = []
+
 def check_resources():
     required_wood = 5
     required_stone = 3
-
-    # Check if enough resources for tower
-    can_build = wood_count >= required_wood and stone_count >= required_stone
-
-    return can_build
-tower_icons = []
+    return wood_count >= required_wood and stone_count >= required_stone
 
 def createTowerIcons():
     global tower_icons
-    tower_names = ["Archer", "Canon", "Wizard"]
 
-    # Create and position the tower icons
-    for i, name in enumerate(tower_names):
-        icon = viz.addText(name, pos=[0.85, 0.85 - i * 0.05, 0], parent=viz.SCREEN)
-        icon.fontSize(18)
-        icon.color(viz.RED if not check_resources() else viz.GREEN)
-        tower_icons.append(icon)
+    # Define the icons and their positions
+    icon_paths = [
+        "img/archer_tower.png",
+        "img/cannon.png",
+        "img/wizard_tower.png"
+    ]
+    
+    # Clear existing icons if they are present
+    if tower_icons:
+        for icon in tower_icons:
+            icon.remove()
+        tower_icons.clear()
+    
+    # Add the icons to the top-right of the screen
+    for i, icon_path in enumerate(icon_paths):
+        icon = viz.addTexture(icon_path)
+        sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
+        sprite.setPosition([0.85, 0.85 - i * 0.1, 0])  # Adjust position as needed
+        sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
+        sprite.color(viz.RED if not check_resources() else viz.GREEN)  # Set initial color based on resources
+        sprite.alpha(0.5)  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
+        tower_icons.append(sprite)
+
+def updateTowerIcons():
+    for icon in tower_icons:
+        if check_resources():
+            icon.color(viz.GREEN)
+            icon.alpha(1.0)  # Make it fully opaque if there are enough resources
+        else:
+            icon.color(viz.RED)
+            icon.alpha(0.5)  # Make it semi-transparent if there are not enough resources
+
 
 from resources import set_resource_update_callback
 
-def updateTowerIcons():
-    global tower_icons
-    for icon in tower_icons:
-        icon.color(viz.RED if not check_resources() else viz.GREEN)
-
-# Set the callback
 set_resource_update_callback(updateTowerIcons)
 
 for coord in towerCoordinates:
