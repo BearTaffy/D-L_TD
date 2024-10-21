@@ -3,7 +3,7 @@ import vizact
 
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
-from creeps import spawn_creep, update_creeps
+from creeps import spawnCreep, updateCreeps
 
 # Environment
 mapp = viz.add("models/environment/map.obj")
@@ -38,8 +38,8 @@ manager.onExit(None, onExitSensor)
 viz.callback(viz.KEYDOWN_EVENT, onKeyDown)
 viz.callback(viz.MOUSEDOWN_EVENT, onMouseDown)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
-vizact.ontimer(5, spawn_creep)
-vizact.onupdate(0, update_creeps)
+vizact.ontimer(5, spawnCreep)
+vizact.onupdate(0, updateCreeps)
 
 if __name__ == "__main__":
     viz.go()

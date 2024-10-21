@@ -140,16 +140,16 @@ def onKeyDown(key):
                 currentObject.setEuler([0, 0, 0])
             currentObject.visible(viz.ON)
             updateObjectPosition()
-            vizact.onupdate(0, attack_creeps)
+            vizact.onupdate(0, attackCreeps)
 
 
-def attack_creeps():
+def attackCreeps():
     for towersPlace in towersPlaces:
         if towersPlace["isPlaced"] and towersPlace["tower"]:
-            tower_pos = towersPlace["tower"].getPosition()
+            towerPos = towersPlace["tower"].getPosition()
             for creep in creeps:
-                creep_pos = creep.model.getPosition()
-                distance = vizmat.Distance(tower_pos, creep_pos)
+                creepPos = creep.model.getPosition()
+                distance = vizmat.Distance(towerPos, creepPos)
                 if distance < 5:
                     creep.take_damage(1)
                     break

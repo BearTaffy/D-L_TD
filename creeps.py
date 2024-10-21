@@ -16,8 +16,8 @@ class Creep:
             direction = viz.Vector(target) - viz.Vector(self.model.getPosition())
             if direction.length() > 0.1:
                 direction.normalize()
-                new_pos = viz.Vector(self.model.getPosition()) + direction * self.speed
-                self.model.setPosition(new_pos)
+                newPos = viz.Vector(self.model.getPosition()) + direction * self.speed
+                self.model.setPosition(newPos)
                 self.model.lookAt(target)
             else:
                 self.current_waypoint += 1
@@ -34,7 +34,7 @@ class Creep:
         creeps.remove(self)
 
 
-creep_path = [
+creepPath = [
     [18.809349060058594, -1.0, 0.31083571910858154],
     [16.636079788208008, -1.0, 0.22646713256835938],
     [15.22624397277832, -1.0, -0.14175724983215332],
@@ -65,12 +65,12 @@ creep_path = [
 creeps = []
 
 
-def spawn_creep():
-    new_creep = Creep(creep_path)
-    new_creep.model.setPosition(creep_path[0])
-    creeps.append(new_creep)
+def spawnCreep():
+    newCreep = Creep(creepPath)
+    newCreep.model.setPosition(creepPath[0])
+    creeps.append(newCreep)
 
 
-def update_creeps():
+def updateCreeps():
     for creep in creeps:
         creep.move()
