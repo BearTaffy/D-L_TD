@@ -42,6 +42,38 @@ towerCoordinates = [
     [-2.8, -1.0, -6.7],
 ]
 
+from resources import wood_count, stone_count
+
+def check_resources():
+    required_wood = 5
+    required_stone = 3
+
+    # Check if enough resources for tower
+    can_build = wood_count >= required_wood and stone_count >= required_stone
+
+    return can_build
+tower_icons = []
+
+def createTowerIcons():
+    global tower_icons
+    tower_names = ["Archer", "Canon", "Wizard"]
+
+    # Create and position the tower icons
+    for i, name in enumerate(tower_names):
+        icon = viz.addText(name, pos=[0.85, 0.85 - i * 0.05, 0], parent=viz.SCREEN)
+        icon.fontSize(18)
+        icon.color(viz.RED if not check_resources() else viz.GREEN)
+        tower_icons.append(icon)
+
+from resources import set_resource_update_callback
+
+def updateTowerIcons():
+    global tower_icons
+    for icon in tower_icons:
+        icon.color(viz.RED if not check_resources() else viz.GREEN)
+
+# Set the callback
+set_resource_update_callback(updateTowerIcons)
 
 for coord in towerCoordinates:
     towersPlace = vizshape.addCube(size=0.5)
@@ -51,13 +83,23 @@ for coord in towerCoordinates:
 
 
 def changeCamera():
-    global camMode, currentObject
+    global camMode, currentObject, tower_icons
     if camMode == "robot":
         viewLink = viz.link(downCam, viz.MainView)
         viewLink.preEuler([0, 90, 0])
         camMode = "downCam"
         for towersPlace in towersPlaces:
             towersPlace["towersPlace"].alpha(1)
+        
+        # Create tower icons when switching to top-down view
+        if not tower_icons:
+            createTowerIcons()
+
+        # Update the icons' visibility and color
+        for icon in tower_icons:
+            icon.visible(viz.ON)
+        updateTowerIcons()
+
     else:
         viewLink = viz.link(robot, viz.MainView)
         viewLink.preEuler([0, 45, 0])
@@ -66,6 +108,12 @@ def changeCamera():
         camMode = "robot"
         for towersPlace in towersPlaces:
             towersPlace["towersPlace"].alpha(0)
+
+        # Hide tower icons when switching back to the robot view
+        if tower_icons:
+            for icon in tower_icons:
+                icon.visible(viz.OFF)
+
         if currentObject:
             currentObject.remove()
             currentObject = None

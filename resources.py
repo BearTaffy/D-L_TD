@@ -4,6 +4,7 @@ import vizproximity
 
 from towers import robot
 
+
 wood_count = 0
 stone_count = 0
 collecting_wood = False
@@ -25,9 +26,17 @@ stone = viz.add("models/environment/rock_formation.obj")
 stone.setPosition(-8.87, -0.8, 7.08)
 stone.setScale([0.5, 0.5, 0.5])
 
-portal = viz.add("models/environment/portal.obj")
-portal.setPosition(19, -0.8, -1.7)
-portal.setScale([0.5, 0.5, 0.5])
+resource_update_callback = None
+
+def set_resource_update_callback(callback):
+    global resource_update_callback
+    resource_update_callback = callback
+
+def update_resources():
+    wood_text.message(f"Wood: {wood_count}")
+    stone_text.message(f"Stone: {stone_count}")
+    if resource_update_callback:
+        resource_update_callback()
 
 # Proximity manager setup
 manager = vizproximity.Manager()
@@ -37,9 +46,7 @@ wood_timer = None
 stone_timer = None
 
 
-def update_resources():
-    wood_text.message(f"Wood: {wood_count}")
-    stone_text.message(f"Stone: {stone_count}")
+
 
 
 def add_wood():
