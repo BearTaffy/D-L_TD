@@ -9,6 +9,8 @@ wood_count = 0
 stone_count = 0
 collecting_wood = False
 collecting_stone = False
+tower_icons = []
+
 
 wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.1, 0.9, 0], parent=viz.SCREEN)
 wood_text.fontSize(20)
@@ -28,15 +30,18 @@ stone.setScale([0.5, 0.5, 0.5])
 
 resource_update_callback = None
 
+
 def set_resource_update_callback(callback):
     global resource_update_callback
     resource_update_callback = callback
+
 
 def update_resources():
     wood_text.message(f"Wood: {wood_count}")
     stone_text.message(f"Stone: {stone_count}")
     if resource_update_callback:
-        resource_update_callback()  
+        resource_update_callback()
+
 
 # Proximity manager setup
 manager = vizproximity.Manager()
@@ -44,9 +49,6 @@ manager.setDebug(True)
 manager.addTarget(vizproximity.Target(robot))
 wood_timer = None
 stone_timer = None
-
-
-
 
 
 def add_wood():
@@ -107,6 +109,51 @@ def AddSensor(shape, name):
     sensor = vizproximity.Sensor(shape, None)
     sensor.name = name
     manager.addSensor(sensor)
+
+
+def check_resources():
+    required_wood = 5
+    required_stone = 3
+    return wood_count >= required_wood and stone_count >= required_stone
+
+
+def createTowerIcons():
+    global tower_icons
+
+    # Define the icons and their positions
+    icon_paths = ["img/archer_tower.png", "img/cannon.png", "img/wizard_tower.png"]
+
+    # Clear existing icons if they are present
+    if tower_icons:
+        for icon in tower_icons:
+            icon.remove()
+        tower_icons.clear()
+
+    # Add the icons to the top-right of the screen
+    for i, icon_path in enumerate(icon_paths):
+        icon = viz.addTexture(icon_path)
+        sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
+        sprite.setPosition([0.85, 0.85 - i * 0.1, 0])  # Adjust position as needed
+        sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
+        sprite.color(
+            viz.RED if not check_resources() else viz.GREEN
+        )  # Set initial color based on resources
+        sprite.alpha(
+            0.5
+        )  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
+        tower_icons.append(sprite)
+
+
+def updateTowerIcons():
+    for icon in tower_icons:
+        if check_resources():
+            icon.color(viz.GREEN)
+            icon.alpha(1.0)  # Make it fully opaque if there are enough resources
+        else:
+            icon.color(viz.RED)
+            icon.alpha(
+                0.5
+            )  # Make it semi-transparent if there are not enough resources
 
 
 # Add circular sensor around the tree
