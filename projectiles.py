@@ -63,8 +63,8 @@ class ArrowProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.5,
-            damage=20,
+            speed=0.8,
+            damage=10,
             model="models/projectiles/arrow.obj",
         )
         if not self.model:
@@ -78,7 +78,7 @@ class CannonballProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.2,
+            speed=0.5,
             damage=40,
             model="models/projectiles/cannon_ball.obj",
         )
@@ -93,7 +93,7 @@ class MagicProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.25,
+            speed=0.6,
             damage=30,
             model="models/projectiles/wizard_bolt.obj",
         )
