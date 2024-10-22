@@ -11,6 +11,12 @@ collecting_wood = False
 collecting_stone = False
 tower_icons = []
 
+# Proximity manager setup
+manager = vizproximity.Manager()
+manager.setDebug(True)
+manager.addTarget(vizproximity.Target(robot))
+wood_timer = None
+stone_timer = None
 
 wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.1, 0.9, 0], parent=viz.SCREEN)
 wood_text.fontSize(20)
@@ -41,14 +47,6 @@ def update_resources():
     stone_text.message(f"Stone: {stone_count}")
     if resource_update_callback:
         resource_update_callback()
-
-
-# Proximity manager setup
-manager = vizproximity.Manager()
-manager.setDebug(True)
-manager.addTarget(vizproximity.Target(robot))
-wood_timer = None
-stone_timer = None
 
 
 def add_wood():
