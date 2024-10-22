@@ -18,13 +18,13 @@ camMode = "robot"
 
 
 class Tower:
-    def __init__(self, model, scale, projectile_class):
+    def __init__(self, model, scale, projectileClass):
         self.model = viz.add(model)
         self.model.setScale(scale)
-        self.projectile_class = projectile_class
-        self.attack_range = 5
-        self.attack_cooldown = 1.0
-        self.last_attack_time = 0
+        self.projectileClass = projectileClass
+        self.attackRange = 5
+        self.attackCooldown = 1.0
+        self.lastAttackTime = 0
 
     def setPosition(self, pos):
         self.model.setPosition(pos)
@@ -38,32 +38,32 @@ class Tower:
     def visible(self, state):
         self.model.visible(state)
 
-    def update(self, current_time):
-        if current_time - self.last_attack_time >= self.attack_cooldown:
-            closest_creep = None
-            min_distance = float("inf")
-            tower_pos = self.model.getPosition()
+    def update(self, currentTime):
+        if currentTime - self.lastAttackTime >= self.attackCooldown:
+            closestCreep = None
+            minDistance = float("inf")
+            towerPos = self.model.getPosition()
 
             for creep in creeps:
                 if creep.model:
-                    creep_pos = creep.model.getPosition()
-                    distance = vizmat.Distance(tower_pos, creep_pos)
-                    if distance < self.attack_range and distance < min_distance:
-                        min_distance = distance
-                        closest_creep = creep
+                    creepPos = creep.model.getPosition()
+                    distance = vizmat.Distance(towerPos, creepPos)
+                    if distance < self.attackRange and distance < minDistance:
+                        minDistance = distance
+                        closestCreep = creep
 
-            if closest_creep:
-                self.attack(closest_creep)
-                self.last_attack_time = current_time
+            if closestCreep:
+                self.attack(closestCreep)
+                self.lastAttackTime = currentTime
 
-    def attack(self, target_creep):
-        start_pos = self.model.getPosition()
-        start_pos = [start_pos[0], start_pos[1] + 0.5, start_pos[2]]
+    def attack(self, targetCreep):
+        startPos = self.model.getPosition()
+        startPos = [startPos[0], startPos[1] + 0.5, startPos[2]]
 
-        new_projectile = self.projectile_class(start_pos, target_creep)
-        projectiles.append(new_projectile)
+        newProjectile = self.projectileClass(startPos, targetCreep)
+        projectiles.append(newProjectile)
 
-        # self.model.lookAt(target_creep.model.getPosition())
+        # self.model.lookAt(targetCreep.model.getPosition())
 
 
 towerCoordinates = [
@@ -155,11 +155,11 @@ def updateObjectPosition():
             currentObject.setPosition(intersectionPoint)
 
 
-def update_towers():
-    current_time = viz.tick()
+def updateTowers():
+    currentTime = viz.tick()
     for towersPlace in towersPlaces:
         if towersPlace["isPlaced"] and towersPlace["tower"]:
-            towersPlace["tower"].update(current_time)
+            towersPlace["tower"].update(currentTime)
 
 
 def onMouseDown(button):
@@ -167,15 +167,15 @@ def onMouseDown(button):
     if button == viz.MOUSEBUTTON_LEFT:
         for towersPlace in towersPlaces:
             if not towersPlace["isPlaced"]:
-                tower_position = towersPlace["towersPlace"].getPosition()
+                towerPosition = towersPlace["towersPlace"].getPosition()
                 if (
                     currentObject
-                    and vizmat.Distance(tower_position, currentObject.getPosition())
+                    and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
                     towersPlace["isPlaced"] = True
                     towersPlace["tower"] = currentObject
-                    currentObject.setPosition(tower_position)
+                    currentObject.setPosition(towerPosition)
                     currentObject = None
                     break
 
@@ -206,5 +206,5 @@ def onKeyDown(key):
             updateObjectPosition()
 
 
-vizact.onupdate(0, update_towers)
+vizact.onupdate(0, updateTowers)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)

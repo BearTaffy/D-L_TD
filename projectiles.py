@@ -5,10 +5,13 @@ import vizmat
 import math
 
 
+projectiles = []
+
+
 class Projectile:
-    def __init__(self, start_pos, target, speed, damage, model):
+    def __init__(self, startPos, target, speed, damage, model):
         self.model = viz.add(model)
-        self.model.setPosition(start_pos)
+        self.model.setPosition(startPos)
         self.model.setScale(0.05, 0.05, 0.05)
         self.target = target
         self.speed = speed
@@ -24,27 +27,30 @@ class Projectile:
             self.remove()
             return True
 
-        current_pos = viz.Vector(self.model.getPosition())
-        target_pos = viz.Vector(self.target.model.getPosition())
-        direction = target_pos - current_pos
+        currentPos = viz.Vector(self.model.getPosition())
+        targetPos = viz.Vector(self.target.model.getPosition())
+        direction = targetPos - currentPos
 
         if direction.length() < 0.2:
             self.hit()
             return True
 
         direction.normalize()
-        new_pos = current_pos + direction * self.speed
+        new_pos = currentPos + direction * self.speed
         self.model.setPosition(new_pos)
-        self.model.lookAt(target_pos)
+        self.model.lookAt(targetPos)
+
+        direction = viz.Vector(targetPos) - viz.Vector(currentPos)
+        direction.normalize()
         angle = math.atan2(direction[0], direction[2])
-        angle_degrees = math.degrees(angle)
-        self.model.setEuler([45 - angle_degrees, 0, 0])
+        angleDegrees = math.degrees(angle)
+        self.model.setEuler([45 - angleDegrees, 0, 0])
 
         return False
 
     def hit(self):
-        if self.target and hasattr(self.target, "take_damage"):
-            self.target.take_damage(self.damage)
+        if self.target and hasattr(self.target, "takeDamage"):
+            self.target.takeDamage(self.damage)
         self.remove()
 
     def remove(self):
@@ -53,9 +59,9 @@ class Projectile:
 
 
 class ArrowProjectile(Projectile):
-    def __init__(self, start_pos, target):
+    def __init__(self, startPos, target):
         super().__init__(
-            start_pos,
+            startPos,
             target,
             speed=0.5,
             damage=20,
@@ -63,14 +69,14 @@ class ArrowProjectile(Projectile):
         )
         if not self.model:
             self.model = vizshape.addCone(height=0.2, radius=0.05)
-            self.model.setPosition(start_pos)
+            self.model.setPosition(startPos)
             self.model.color(viz.YELLOW)
 
 
 class CannonballProjectile(Projectile):
-    def __init__(self, start_pos, target):
+    def __init__(self, startPos, target):
         super().__init__(
-            start_pos,
+            startPos,
             target,
             speed=0.2,
             damage=40,
@@ -78,14 +84,14 @@ class CannonballProjectile(Projectile):
         )
         if not self.model:
             self.model = vizshape.addSphere(radius=0.1)
-            self.model.setPosition(start_pos)
+            self.model.setPosition(startPos)
             self.model.color(viz.BLACK)
 
 
 class MagicProjectile(Projectile):
-    def __init__(self, start_pos, target):
+    def __init__(self, startPos, target):
         super().__init__(
-            start_pos,
+            startPos,
             target,
             speed=0.25,
             damage=30,
@@ -93,15 +99,12 @@ class MagicProjectile(Projectile):
         )
         if not self.model:
             self.model = vizshape.addSphere(radius=0.08)
-            self.model.setPosition(start_pos)
+            self.model.setPosition(startPos)
             self.model.color(viz.BLUE)
             self.model.emissive([0, 0, 1])
 
 
-projectiles = []
-
-
-def update_projectiles():
+def updateProjectiles():
     for i in range(len(projectiles) - 1, -1, -1):
         if i < len(projectiles):
             projectile = projectiles[i]
@@ -110,4 +113,4 @@ def update_projectiles():
                     projectiles.remove(projectile)
 
 
-vizact.onupdate(0, update_projectiles)
+vizact.onupdate(0, updateProjectiles)
