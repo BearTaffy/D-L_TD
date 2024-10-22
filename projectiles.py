@@ -49,8 +49,8 @@ class Projectile:
         return False
 
     def hit(self):
-        if self.target and hasattr(self.target, "takeDamage"):
-            self.target.takeDamage(self.damage)
+        if self.target and hasattr(self.target, "take_damage"):
+            self.target.take_damage(self.damage)
         self.remove()
 
     def remove(self):
