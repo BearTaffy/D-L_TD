@@ -1,11 +1,70 @@
 import viz
 import vizshape
 import vizmat
+import vizact
 
+from creeps import creeps
 from camera import changeCamera, downCam, robot, camMode
+from projectiles import (
+    ArrowProjectile,
+    CannonballProjectile,
+    MagicProjectile,
+    projectiles,
+)
 
 towersPlaces = []
 currentObject = None
+camMode = "robot"
+
+
+class Tower:
+    def __init__(self, model, scale, projectileClass):
+        self.model = viz.add(model)
+        self.model.setScale(scale)
+        self.projectileClass = projectileClass
+        self.attackRange = 5
+        self.attackCooldown = 1.0
+        self.lastAttackTime = 0
+
+    def setPosition(self, pos):
+        self.model.setPosition(pos)
+
+    def getPosition(self):
+        return self.model.getPosition()
+
+    def remove(self):
+        self.model.remove()
+
+    def visible(self, state):
+        self.model.visible(state)
+
+    def update(self, currentTime):
+        if currentTime - self.lastAttackTime >= self.attackCooldown:
+            closestCreep = None
+            minDistance = float("inf")
+            towerPos = self.model.getPosition()
+
+            for creep in creeps:
+                if creep.model:
+                    creepPos = creep.model.getPosition()
+                    distance = vizmat.Distance(towerPos, creepPos)
+                    if distance < self.attackRange and distance < minDistance:
+                        minDistance = distance
+                        closestCreep = creep
+
+            if closestCreep:
+                self.attack(closestCreep)
+                self.lastAttackTime = currentTime
+
+    def attack(self, targetCreep):
+        startPos = self.model.getPosition()
+        startPos = [startPos[0], startPos[1] + 0.5, startPos[2]]
+
+        newProjectile = self.projectileClass(startPos, targetCreep)
+        projectiles.append(newProjectile)
+
+        # self.model.lookAt(targetCreep.model.getPosition())
+
 
 towerCoordinates = [
     [12.7, -1.0, 1.1],
@@ -41,7 +100,6 @@ towerCoordinates = [
     [6.3, -1.0, -0.1],
     [-2.8, -1.0, -6.7],
 ]
-
 
 for coord in towerCoordinates:
     towersPlace = vizshape.addCube(size=0.5)
@@ -97,19 +155,27 @@ def updateObjectPosition():
             currentObject.setPosition(intersectionPoint)
 
 
+def updateTowers():
+    currentTime = viz.tick()
+    for towersPlace in towersPlaces:
+        if towersPlace["isPlaced"] and towersPlace["tower"]:
+            towersPlace["tower"].update(currentTime)
+
+
 def onMouseDown(button):
     global currentObject
     if button == viz.MOUSEBUTTON_LEFT:
         for towersPlace in towersPlaces:
             if not towersPlace["isPlaced"]:
-                tower_position = towersPlace["towersPlace"].getPosition()
+                towerPosition = towersPlace["towersPlace"].getPosition()
                 if (
                     currentObject
-                    and vizmat.Distance(tower_position, currentObject.getPosition())
+                    and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
                     towersPlace["isPlaced"] = True
                     towersPlace["tower"] = currentObject
+                    currentObject.setPosition(towerPosition)
                     currentObject = None
                     break
 
@@ -125,16 +191,20 @@ def onKeyDown(key):
             if currentObject:
                 currentObject.remove()
             if key == "1":
-                currentObject = viz.add("models/towers/archer_tower.obj")
-                currentObject.setScale([0.2, 0.2, 0.2])
-                currentObject.setEuler([0, 0, 0])
+                currentObject = Tower(
+                    "models/towers/archer_tower.obj", [0.2, 0.2, 0.2], ArrowProjectile
+                )
             elif key == "2":
-                currentObject = viz.add("models/towers/canon.obj")
-                currentObject.setScale([0.25, 0.25, 0.25])
-                currentObject.setEuler([0, 0, 0])
+                currentObject = Tower(
+                    "models/towers/canon.obj", [0.25, 0.25, 0.25], CannonballProjectile
+                )
             elif key == "3":
-                currentObject = viz.add("models/towers/wizard_tower.obj")
-                currentObject.setScale([0.2, 0.2, 0.2])
-                currentObject.setEuler([0, 0, 0])
+                currentObject = Tower(
+                    "models/towers/wizard_tower.obj", [0.2, 0.2, 0.2], MagicProjectile
+                )
             currentObject.visible(viz.ON)
             updateObjectPosition()
+
+
+vizact.onupdate(0, updateTowers)
+vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
