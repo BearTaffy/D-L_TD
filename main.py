@@ -1,6 +1,7 @@
 import viz
 import vizact
 
+
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
 from creeps import spawnCreep, updateCreeps
@@ -35,6 +36,11 @@ dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 135, 0))
 dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 0, 45))
 dir_light.direction(0, -1, 0)
 dir_light.intensity(0.5)
+
+# Background Music
+background_music = viz.addAudio("sound/Bus Window - The Circle of Fifths.mp3")
+background_music.loop(viz.ON)  # Loop the music
+background_music.play()  # Start playing
 
 # Function calls
 manager.onEnter(None, onEnterSensor)
