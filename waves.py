@@ -13,6 +13,33 @@ class WaveManager:
         self.lastSpawnTime = 0
         self.waveStartTime = 0
         self.difficultyMultiplier = 1.0
+        self.setupUI()
+
+    def setupUI(self):
+        self.panel = viz.addText("")
+        self.panel.alignment(viz.ALIGN_LEFT_TOP)
+        self.panel.setBackdrop(viz.BACKDROP_OUTLINE)
+        self.panel.alpha(0.7)
+        self.panel.setPosition(19, 7, 3)
+        self.panel.setScale(0.7, 0.7, 0.7)
+        self.panel.billboard(viz.BILLBOARD_VIEW)
+        self.panel.depthFunc(viz.GL_ALWAYS)
+
+        self.updateUI()
+
+    def updateUI(self):
+        if self.isWaveActive:
+            status = f"WAVE {self.currentWave} IN PROGRESS\n"
+            status += f"Remaining Creeps: {self.creepsToSpawn + len(creeps)}\n"
+        else:
+            time_until_next = max(
+                0, self.waveInterval - (viz.tick() - self.waveStartTime)
+            )
+            status = f"WAVE {self.currentWave} COMPLETE\n"
+            status += f"Next Wave in: {time_until_next:.1f}s\n"
+
+        status += f"\nDifficulty: {self.difficultyMultiplier:.1f}x"
+        self.panel.message(status)
 
     def startWave(self):
         self.currentWave += 1
@@ -60,3 +87,4 @@ wave_manager = WaveManager()
 
 def updateWaveSystem():
     wave_manager.update()
+    wave_manager.updateUI()
