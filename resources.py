@@ -1,6 +1,7 @@
 import viz
 import vizact
 import vizproximity
+import vizshape
 
 from towers import robot
 
@@ -127,32 +128,35 @@ def createTowerIcons():
             icon.remove()
         tower_icons.clear()
 
-    # Add the icons to the top-right of the screen
+    # Add the icons and shapes to the top-right of the screen
     for i, icon_path in enumerate(icon_paths):
         icon = viz.addTexture(icon_path)
         sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
-        sprite.setPosition([0.85, 0.85 - i * 0.1, 0])  # Adjust position as needed
-        sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
-        sprite.color(
-            viz.RED if not check_resources() else viz.GREEN
-        )  # Set initial color based on resources
-        sprite.alpha(
-            0.5
-        )  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
+        sprite.setPosition([0.95, 0.90 - i * 0.1, 0])  # Adjust position as needed
+        sprite.setScale([0.7, 0.7, 0.7])  # Ensure all icons are the same size
+
+        # Create the box to overlay on top of the icon
+        test = vizshape.addBox(size=[0.1, 0.1, 0.001], parent=viz.SCREEN)
+        test.setPosition([0.95, 0.90 - i * 0.1, 0.01])  # Slightly in front of the photo
+        test.setScale([0.7, 0.7, 0.7])  # Adjust scale as needed
+
+        # Set initial color based on resources
+        test.color(viz.RED if not check_resources() else viz.GREEN)
+        test.alpha(0.5)  # Set opacity to 50%
+
+        # Add the shape to the list for updating
+        tower_icons.append(test)
         tower_icons.append(sprite)
 
 
 def updateTowerIcons():
-    for icon in tower_icons:
+    for test in tower_icons:
         if check_resources():
-            icon.color(viz.GREEN)
-            icon.alpha(1.0)  # Make it fully opaque if there are enough resources
+            test.color(viz.GREEN)
+            test.alpha(0.3)  # Make it fully opaque if there are enough resources
         else:
-            icon.color(viz.RED)
-            icon.alpha(
-                0.5
-            )  # Make it semi-transparent if there are not enough resources
-
+            test.color(viz.RED)
+            test.alpha(0.3)  # Make it semi-transparent if there are not enough resources
 
 # Add circular sensor around the tree
 shape = vizproximity.CircleArea(3, center=[-8.21, -7.7])
