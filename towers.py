@@ -198,7 +198,11 @@ def onMouseDown(button):
                     currentObject.setPosition(towerPosition)
                     currentObject = None
                     break
-
+cost={
+    "Tower": "Archer-tower" "Cannon" "Wizard-tower",
+    "Wood": "5" "5" "8",
+    "Stone": "3" "8" "12"
+}
 
 def onKeyDown(key):
     global currentObject, camMode

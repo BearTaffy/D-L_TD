@@ -153,10 +153,10 @@ def updateTowerIcons():
     for test in tower_icons:
         if check_resources():
             test.color(viz.GREEN)
-            test.alpha(0.3)  # Make it fully opaque if there are enough resources
+            test.alpha(0.5)  # Make it fully opaque if there are enough resources
         else:
             test.color(viz.RED)
-            test.alpha(0.3)  # Make it semi-transparent if there are not enough resources
+            test.alpha(0.5)  # Make it semi-transparent if there are not enough resources
 
 # Add circular sensor around the tree
 shape = vizproximity.CircleArea(3, center=[-8.21, -7.7])
