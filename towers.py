@@ -121,6 +121,7 @@ def changeCamera():
         viewLink = viz.link(downCam, viz.MainView)
         viewLink.preEuler([0, 90, 0])
         camMode = "downCam"
+
         for towersPlace in towersPlaces:
             towersPlace["towersPlace"].alpha(1)
 
@@ -137,6 +138,7 @@ def changeCamera():
         viewLink.preTrans([0, 0, -3])
         viewLink.preEuler([0, -20, 0])
         camMode = "robot"
+
         for towersPlace in towersPlaces:
             towersPlace["towersPlace"].alpha(0)
 
