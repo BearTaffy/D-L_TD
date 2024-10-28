@@ -2,8 +2,7 @@ import viz
 import vizhtml
 import viztask
 
-viz.fov(60)
-viz.go()
+
 
 # Display the title screen with an image and text
 def TitleScreenTask():
@@ -11,25 +10,25 @@ def TitleScreenTask():
     <html>
     <head>
         <style>
-            html, body {
+            html {
                 margin: 0;
                 padding: 0;
-                width: 100%;
-                height: 100%;
+                width: 50px;
+                height: 943px;
                 overflow: hidden;
                 position: relative;
             }
+    
             .container {
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
+                width: 50px;
+                height: 943px;
                 align-items: center;
-                background: #000;
                 flex-direction: column;
+                background: url('img/title.png') no-repeat center center fixed;
+                background-size: cover;
             }
             h1 {
                 font-size: 8vw;
@@ -37,10 +36,8 @@ def TitleScreenTask():
                 margin-bottom: 2vh;
             }
             img {
-                width: 80%;
-                height: auto;
-                max-width: 1000px;
-                max-height: 60vh;
+                width: 50px;
+                height: 943px;
             }
             button {
                 font-size: 4vw;
@@ -52,7 +49,7 @@ def TitleScreenTask():
     <body>
         <div class="container">
             <h1>Tower Defense</h1>
-            <img src="img/title.png" alt="Tower Defense">
+            
             <button onclick="window.location.href='javascript:parent.viz.sendEvent(\\'startGame\\')'">Start Game</button>
         </div>
     </body>
