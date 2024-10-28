@@ -51,15 +51,49 @@ creepPathShort = [
 ]
 
 
+class CreepType:
+    def __init__(self, model_path, scale, health, speed, damage):
+        self.model_path = model_path
+        self.scale = scale
+        self.health = health
+        self.speed = speed
+        self.damage = damage
+
+
+creepTypes = {
+    "golem": CreepType(
+        model_path="models/creeps/small_golem.obj",
+        scale=(0.25, 0.25, 0.25),
+        health=150,
+        speed=0.08,
+        damage=15,
+    ),
+    "scout": CreepType(
+        model_path="models/creeps/gargoyle.osgb",
+        scale=(0.15, 0.15, 0.15),
+        health=75,
+        speed=0.15,
+        damage=5,
+    ),
+    "brute": CreepType(
+        model_path="models/creeps/big_golem.obj",
+        scale=(0.3, 0.3, 0.3),
+        health=250,
+        speed=0.06,
+        damage=25,
+    ),
+}
+
+
 class Creep:
-    def __init__(self, path):
-        self.model = viz.add("models/creeps/ICE.obj")
-        self.model.setScale(0.2, 0.2, 0.2)
+    def __init__(self, path, creep_type):
+        self.model = viz.add(creep_type.model_path)
+        self.model.setScale(*creep_type.scale)
         self.path = path
         self.current_waypoint = 0
-        self.speed = 0.1
-        self.health = 100
-        self.damage = 10
+        self.speed = creep_type.speed
+        self.health = creep_type.health
+        self.damage = creep_type.damage
         self.marked_for_removal = False
 
     def move(self):
@@ -94,12 +128,13 @@ class Creep:
 
 
 def spawnCreep():
-    shortPath = random.random() < 0.5
-    if shortPath:
-        newCreep = Creep(creepPathShort)
-    else:
-        newCreep = Creep(creepPath)
-    newCreep.model.setPosition(creepPath[0])
+    creep_type_name = random.choice(list(creepTypes.keys()))
+    creep_type = creepTypes[creep_type_name]
+
+    path = creepPathShort if random.random() < 0.2 else creepPath
+
+    newCreep = Creep(path, creep_type)
+    newCreep.model.setPosition(path[0])
     creeps.append(newCreep)
 
 
