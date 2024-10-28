@@ -39,8 +39,13 @@ class Creep:
         self.current_waypoint = 0
         self.speed = 0.1
         self.health = 100
+        self.damage = 10
+        self.marked_for_removal = False
 
     def move(self):
+        if self.marked_for_removal:
+            return
+
         if self.current_waypoint < len(self.path):
             target = self.path[self.current_waypoint]
             direction = viz.Vector(target) - viz.Vector(self.model.getPosition())
@@ -51,17 +56,21 @@ class Creep:
                 self.model.lookAt(target)
             else:
                 self.current_waypoint += 1
-        else:
-            self.remove()
+                if self.current_waypoint >= len(self.path):
+                    from waves import base_health
+
+                    base_health.takeDamage(self.damage)
+                    self.marked_for_removal = True
 
     def take_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
-            self.remove()
+            self.marked_for_removal = True
 
     def remove(self):
-        self.model.remove()
-        creeps.remove(self)
+        if self.model:
+            self.model.remove()
+            self.model = None
 
 
 def spawnCreep():
@@ -73,3 +82,9 @@ def spawnCreep():
 def updateCreeps():
     for creep in creeps:
         creep.move()
+
+    for creep in creeps[:]:
+        if creep.marked_for_removal:
+            creep.remove()
+            if creep in creeps:
+                creeps.remove(creep)

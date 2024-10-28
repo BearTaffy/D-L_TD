@@ -4,6 +4,7 @@ import vizact
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
 from creeps import spawnCreep, updateCreeps
+from waves import updateWaveSystem
 
 # Environment
 mapp = viz.add("models/environment/map.obj")
@@ -42,8 +43,9 @@ manager.onExit(None, onExitSensor)
 viz.callback(viz.KEYDOWN_EVENT, onKeyDown)
 viz.callback(viz.MOUSEDOWN_EVENT, onMouseDown)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
-vizact.ontimer(5, spawnCreep)
+# vizact.ontimer(5, spawnCreep)
 vizact.onupdate(0, updateCreeps)
+vizact.onupdate(0, updateWaveSystem)
 
 if __name__ == "__main__":
     viz.go()
