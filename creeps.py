@@ -1,4 +1,5 @@
 import viz
+import random
 
 creeps = []
 
@@ -29,18 +30,76 @@ creepPath = [
     [-10.898310661315918, -1.0, -0.13294219970703125],
     [-13.031258583068848, -1.0, 0.329778254032135],
 ]
+creepPathShort = [
+    [19.2425594329834, -1.0, 0.24015599489212036],
+    [17.67222785949707, -1.0, 0.7830374836921692],
+    [16.59592056274414, -1.0, 1.289398431777954],
+    [14.946025848388672, -1.0, 3.104416847229004],
+    [13.262649536132812, -1.0, 4.888514041900635],
+    [11.005504608154297, -1.0, 6.880936145782471],
+    [8.910736083984375, -1.0, 8.414070129394531],
+    [6.405872821807861, -1.0, 9.728119850158691],
+    [3.7270476818084717, -1.0, 10.377726554870605],
+    [0.19099773466587067, -1.0, 10.079933166503906],
+    [-1.5244941711425781, -1.0, 9.076233863830566],
+    [-3.6002063751220703, -1.0, 6.579322814941406],
+    [-5.09058952331543, -1.0, 4.087973594665527],
+    [-6.053377151489258, -1.0, 1.8131310939788818],
+    [-7.630855083465576, -1.0, -0.320290207862854],
+    [-9.917437553405762, -1.0, -0.7944806814193726],
+    [-12.676820755004883, -1.0, 0.07906234264373779],
+]
+
+
+class CreepType:
+    def __init__(self, model_path, scale, health, speed, damage):
+        self.model_path = model_path
+        self.scale = scale
+        self.health = health
+        self.speed = speed
+        self.damage = damage
+
+
+creepTypes = {
+    "golem": CreepType(
+        model_path="models/creeps/small_golem.obj",
+        scale=(0.25, 0.25, 0.25),
+        health=150,
+        speed=0.08,
+        damage=15,
+    ),
+    "scout": CreepType(
+        model_path="models/creeps/gargoyle.osgb",
+        scale=(0.15, 0.15, 0.15),
+        health=75,
+        speed=0.15,
+        damage=5,
+    ),
+    "brute": CreepType(
+        model_path="models/creeps/big_golem.obj",
+        scale=(0.3, 0.3, 0.3),
+        health=250,
+        speed=0.06,
+        damage=25,
+    ),
+}
 
 
 class Creep:
-    def __init__(self, path):
-        self.model = viz.add("models/creeps/ICE.obj")
-        self.model.setScale(0.2, 0.2, 0.2)
+    def __init__(self, path, creep_type):
+        self.model = viz.add(creep_type.model_path)
+        self.model.setScale(*creep_type.scale)
         self.path = path
         self.current_waypoint = 0
-        self.speed = 0.1
-        self.health = 100
+        self.speed = creep_type.speed
+        self.health = creep_type.health
+        self.damage = creep_type.damage
+        self.marked_for_removal = False
 
     def move(self):
+        if self.marked_for_removal:
+            return
+
         if self.current_waypoint < len(self.path):
             target = self.path[self.current_waypoint]
             direction = viz.Vector(target) - viz.Vector(self.model.getPosition())
@@ -51,25 +110,40 @@ class Creep:
                 self.model.lookAt(target)
             else:
                 self.current_waypoint += 1
-        else:
-            self.remove()
+                if self.current_waypoint >= len(self.path):
+                    from waves import base_health
+
+                    base_health.takeDamage(self.damage)
+                    self.marked_for_removal = True
 
     def take_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
-            self.remove()
+            self.marked_for_removal = True
 
     def remove(self):
-        self.model.remove()
-        creeps.remove(self)
+        if self.model:
+            self.model.remove()
+            self.model = None
 
 
 def spawnCreep():
-    newCreep = Creep(creepPath)
-    newCreep.model.setPosition(creepPath[0])
+    creep_type_name = random.choice(list(creepTypes.keys()))
+    creep_type = creepTypes[creep_type_name]
+
+    path = creepPathShort if random.random() < 0.2 else creepPath
+
+    newCreep = Creep(path, creep_type)
+    newCreep.model.setPosition(path[0])
     creeps.append(newCreep)
 
 
 def updateCreeps():
     for creep in creeps:
         creep.move()
+
+    for creep in creeps[:]:
+        if creep.marked_for_removal:
+            creep.remove()
+            if creep in creeps:
+                creeps.remove(creep)
