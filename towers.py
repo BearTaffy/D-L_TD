@@ -5,16 +5,13 @@ import vizact
 
 from creeps import creeps
 from camera import changeCamera, downCam, robot, camMode
+import resources
 from resources import (
     createTowerIcons,
     updateTowerIcons,
     set_resource_update_callback,
     tower_icons,
-    wood_count,
-    stone_count,
 )
-import resources
-
 from projectiles import (
     ArrowProjectile,
     CannonballProjectile,
