@@ -3,31 +3,29 @@
 ## TODO
 
 ```
-refactor code into separate files
-
-camera/player
-
-*add creeps*
-
-*add creep pathing*
-
 material collection minigame
 
 add sound
-
-*make tower placement*
 
 When in downCam show green square where tower can be placed
 
 add tower removal
 
-*make tower attack creeps*
+add intro screen where displays info about how to play the game
 
-make towers shoot objects
+make waves spawn diffrent mobs
 
-? for wizrad tower make bolt have a light that folows it
+add a chance a creep fill chose a difrent path
 
-? when selected tower make tower follow cursor and when clicked place tower if in area of a tower place
+each mob has its own speed, health and damage
+
+make towers upgradable
+
+make towers cost materials
+
+fix projectile spawn / size
+
+game end screen / scoring system
 ```
 
 # Bugs
