@@ -24,6 +24,7 @@ robotLink = viz.link(navigator, robot)
 robotLink.postTrans([0, -1, 1])
 
 downCam = vizshape.addSphere(radius=0.1)
+downCam.alpha(0)
 downCam.setPosition(0, 11, 1)
 
 

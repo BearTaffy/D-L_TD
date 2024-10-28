@@ -82,6 +82,36 @@ class WaveManager:
             self.creepsToSpawn -= 1
 
 
+class BaseHealth:
+    def __init__(self):
+        self.health = 100
+        self.setupUI()
+
+    def setupUI(self):
+        self.panel = viz.addText("")
+        self.panel.alignment(viz.ALIGN_RIGHT_TOP)
+        self.panel.setBackdrop(viz.BACKDROP_OUTLINE)
+        self.panel.alpha(0.7)
+        self.panel.setPosition(-14, 2, 2.5)
+        self.panel.setScale(0.7, 0.7, 0.7)
+        self.panel.billboard(viz.BILLBOARD_VIEW)
+        self.panel.depthFunc(viz.GL_ALWAYS)
+        self.updateUI()
+
+    def updateUI(self):
+        status = f"HOME BASE\nHealth: {self.health}"
+        self.panel.message(status)
+
+    def takeDamage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            print("Game Over - Base Destroyed!")
+        self.updateUI()
+
+
+base_health = BaseHealth()
+
 wave_manager = WaveManager()
 
 
