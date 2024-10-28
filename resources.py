@@ -109,6 +109,8 @@ def AddSensor(shape, name):
 def check_resources(tower_type, tower_costs):
     """Check if enough resources are available for the specified tower type."""
     required_resources = tower_costs.get(tower_type, {"Wood": 0, "Stone": 0})
+    # Debug print to verify resource requirements and availability
+    print(f"Checking resources for {tower_type}: Required - {required_resources}, Available - Wood: {wood_count}, Stone: {stone_count}")
     return wood_count >= required_resources["Wood"] and stone_count >= required_resources["Stone"]
 
 def get_resources():

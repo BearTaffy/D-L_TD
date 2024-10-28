@@ -174,6 +174,8 @@ def updateTowers():
         if towersPlace["isPlaced"] and towersPlace["tower"]:
             towersPlace["tower"].update(currentTime)
 
+from projectiles import ArrowProjectile, CannonballProjectile, MagicProjectile
+
 def onMouseDown(button):
     global currentObject
     if button == viz.MOUSEBUTTON_LEFT:
@@ -185,27 +187,37 @@ def onMouseDown(button):
                     and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
-                    # Set a default value for tower_type
-                    tower_type = None
+                    # Check and print projectile class to confirm correct type
+                    print("Current object's projectile class:", type(currentObject.projectileClass))
+
+                    # Update tower type detection with imported class names
                     if isinstance(currentObject.projectileClass, ArrowProjectile):
                         tower_type = "Archer-tower"
                     elif isinstance(currentObject.projectileClass, CannonballProjectile):
                         tower_type = "Cannon"
                     elif isinstance(currentObject.projectileClass, MagicProjectile):
                         tower_type = "Wizard-tower"
-
-                    # Check if tower_type was assigned
-                    if tower_type and check_resources(tower_type, tower_costs):
-                        towersPlace["isPlaced"] = True
-                        towersPlace["tower"] = currentObject
-                        currentObject.setPosition(towerPosition)
-                        deduct_resources(tower_type)
-                        updateTowerIcons(tower_costs)  # Update icons after placing
-                        currentObject = None
                     else:
-                        display_warning("Insufficient resources to place the tower.")
-                    break
+                        print("Warning: Unknown projectile class type.")
+                        tower_type = None
 
+                    if tower_type:
+                        # Check if resources are sufficient
+                        if check_resources(tower_type, tower_costs):
+                            towersPlace["isPlaced"] = True
+                            towersPlace["tower"] = currentObject
+                            currentObject.setPosition(towerPosition)
+                            currentObject.visible(viz.ON)
+                            print(f"Placed {tower_type} at {towerPosition}")
+                            deduct_resources(tower_type)
+                            print(f"Resources deducted for {tower_type}. Updated resources:")
+                            print_resource_status()
+                            currentObject = None
+                        else:
+                            print("Insufficient resources for placement.")
+                    else:
+                        print("Failed to place tower: Unknown tower type.")
+                    break
 def onKeyDown(key):
     global currentObject, camMode
     if key == "q":
