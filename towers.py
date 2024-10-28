@@ -188,18 +188,20 @@ def onMouseDown(button):
                     and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
-                    tower_type = (
-                        "Archer-tower"
-                        if isinstance(currentObject.projectileClass, ArrowProjectile)
-                        else "Cannon"
-                        if isinstance(currentObject.projectileClass, CannonballProjectile)
-                        else "Wizard-tower"
-                    )
+                    if isinstance(currentObject.projectileClass, ArrowProjectile):
+                        tower_type = "Archer-tower"
+                    elif isinstance(currentObject.projectileClass, CannonballProjectile):
+                        tower_type = "Cannon"
+                    elif isinstance(currentObject.projectileClass, MagicProjectile):
+                        tower_type = "Wizard-tower"
+                    
+
                     if check_resources(tower_type):
                         towersPlace["isPlaced"] = True
                         towersPlace["tower"] = currentObject
                         currentObject.setPosition(towerPosition)
                         deduct_resources(tower_type)
+                        updateTowerIcons()  # Update icons after placing
                         currentObject = None
                     else:
                         display_warning("Insufficient resources to place the tower.")
