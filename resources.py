@@ -115,6 +115,16 @@ def check_resources():
     required_stone = 3
     return wood_count >= required_wood and stone_count >= required_stone
 
+def get_resources():
+    global wood_count, stone_count
+    return wood_count, stone_count
+
+def set_resources(new_wood, new_stone):
+    global wood_count, stone_count
+    wood_count = new_wood
+    stone_count = new_stone
+    update_resources()  # Ensure display updates if there is a UI
+
 
 def createTowerIcons():
     global tower_icons
