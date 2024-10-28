@@ -10,7 +10,11 @@ from resources import (
     updateTowerIcons,
     set_resource_update_callback,
     tower_icons,
+    wood_count,
+    stone_count,
 )
+import resources
+
 from projectiles import (
     ArrowProjectile,
     CannonballProjectile,
@@ -18,6 +22,11 @@ from projectiles import (
     projectiles,
 )
 
+towerCosts = {
+    "archer": {"wood": 5, "stone": 3},
+    "cannon": {"wood": 8, "stone": 5},
+    "wizard": {"wood": 10, "stone": 8},
+}
 
 towersPlaces = []
 currentObject = None
@@ -60,10 +69,11 @@ towerCoordinates = [
 
 
 class Tower:
-    def __init__(self, model, scale, projectileClass):
+    def __init__(self, model, scale, projectileClass, towerType):
         self.model = viz.add(model)
         self.model.setScale(scale)
         self.projectileClass = projectileClass
+        self.towerType = towerType
         self.attackRange = 5
         self.attackCooldown = 1.0
         self.lastAttackTime = 0
@@ -186,20 +196,39 @@ def updateTowers():
 
 def onMouseDown(button):
     global currentObject
-    if button == viz.MOUSEBUTTON_LEFT:
+    if button == viz.MOUSEBUTTON_LEFT and currentObject:
         for towersPlace in towersPlaces:
             if not towersPlace["isPlaced"]:
                 towerPosition = towersPlace["towersPlace"].getPosition()
-                if (
-                    currentObject
-                    and vizmat.Distance(towerPosition, currentObject.getPosition())
-                    < 0.5
-                ):
-                    towersPlace["isPlaced"] = True
-                    towersPlace["tower"] = currentObject
-                    currentObject.setPosition(towerPosition)
-                    currentObject = None
-                    break
+                distance = vizmat.Distance(towerPosition, currentObject.getPosition())
+                if distance < 0.5:
+                    if checkResources(currentObject.towerType):
+                        towersPlace["isPlaced"] = True
+                        towersPlace["tower"] = currentObject
+                        currentObject.setPosition(towerPosition)
+                        removeResources(currentObject.towerType)
+                        currentObject = None
+                        break
+                    else:
+                        currentObject.remove()
+                        currentObject = None
+                        break
+
+
+def checkResources(towerType):
+    costs = towerCosts[towerType]
+    hasEnough = (
+        resources.wood_count >= costs["wood"]
+        and resources.stone_count >= costs["stone"]
+    )
+    return hasEnough
+
+
+def removeResources(towerType):
+    costs = towerCosts[towerType]
+    resources.wood_count -= costs["wood"]
+    resources.stone_count -= costs["stone"]
+    resources.update_resources()
 
 
 def onKeyDown(key):
@@ -212,20 +241,33 @@ def onKeyDown(key):
         if key in ["1", "2", "3"]:
             if currentObject:
                 currentObject.remove()
-            if key == "1":
-                currentObject = Tower(
-                    "models/towers/archer_tower.obj", [0.2, 0.2, 0.2], ArrowProjectile
-                )
-            elif key == "2":
-                currentObject = Tower(
-                    "models/towers/canon.obj", [0.25, 0.25, 0.25], CannonballProjectile
-                )
-            elif key == "3":
-                currentObject = Tower(
-                    "models/towers/wizard_tower.obj", [0.2, 0.2, 0.2], MagicProjectile
-                )
-            currentObject.visible(viz.ON)
-            updateObjectPosition()
+                currentObject = None
+
+            towerType = {"1": "archer", "2": "cannon", "3": "wizard"}.get(key)
+
+            if checkResources(towerType):
+                towerConfigs = {
+                    "archer": (
+                        "models/towers/archer_tower.obj",
+                        [0.2, 0.2, 0.2],
+                        ArrowProjectile,
+                    ),
+                    "cannon": (
+                        "models/towers/canon.obj",
+                        [0.25, 0.25, 0.25],
+                        CannonballProjectile,
+                    ),
+                    "wizard": (
+                        "models/towers/wizard_tower.obj",
+                        [0.2, 0.2, 0.2],
+                        MagicProjectile,
+                    ),
+                }
+
+                model, scale, projectile = towerConfigs[towerType]
+                currentObject = Tower(model, scale, projectile, towerType)
+                currentObject.visible(viz.ON)
+                updateObjectPosition()
 
 
 vizact.onupdate(0, updateTowers)
