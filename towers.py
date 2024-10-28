@@ -12,6 +12,7 @@ from resources import (
     tower_icons,
     get_resources,
     set_resources,
+    check_resources,
 )
 from projectiles import (
     ArrowProjectile,
@@ -24,6 +25,7 @@ towersPlaces = []
 currentObject = None
 camMode = "robot"
 
+# Coordinates for tower placement
 towerCoordinates = [
     [12.7, -1.0, 1.1], [10.6, -1.0, 5.0], [7.0, -1.0, 8.0], [1.6, -1.0, 8.0],
     [-3.1, -1.0, 3.5], [-7.3, -1.0, 3.5], [-5.1, -1.0, 6.8], [-2.5, -1.0, 9.8],
@@ -32,7 +34,7 @@ towerCoordinates = [
     [6.0, -1.0, -8.3], [1.1, -1.0, -8.3], [-5.0, -1.0, -3.7], [-7.8, -1.0, -2.2],
     [-4.4, -1.0, -0.8], [7.7, -1.0, -3.8], [4.8, -1.0, -5.3], [1.0, -1.0, -5.3],
     [-1.0, -1.0, -3.4], [10.0, -1.0, -1.1], [0.5, -1.0, 2.0], [3.5, -1.0, 3.1],
-    [6.0, -1.0, 4.2], [0.8, -1.0, -1.1], [6.3, -1.0, -0.1], [-2.8, -1.0, -6.7],
+    [6.0, -1.0, 4.2], [0.8, -1.0, -1.1], [6.3, -1.0, -0.1], [-2.8, -1.0, -6.7]
 ]
 
 tower_costs = {
@@ -97,11 +99,6 @@ for coord in towerCoordinates:
     towersPlace.alpha(0)
     towersPlaces.append({"towersPlace": towersPlace, "isPlaced": False, "tower": None})
 
-def check_resources(tower_type):
-    wood_count, stone_count = get_resources()
-    costs = tower_costs.get(tower_type, {})
-    return wood_count >= costs["Wood"] and stone_count >= costs["Stone"]
-
 def deduct_resources(tower_type):
     wood_count, stone_count = get_resources()
     costs = tower_costs.get(tower_type, {})
@@ -124,11 +121,11 @@ def changeCamera():
             towersPlace["towersPlace"].alpha(1)
 
         if not tower_icons:
-            createTowerIcons()
+            createTowerIcons(tower_costs)
 
         for icon in tower_icons:
             icon.visible(viz.ON)
-        updateTowerIcons()
+        updateTowerIcons(tower_costs)
 
     else:
         viewLink = viz.link(robot, viz.MainView)
@@ -188,20 +185,22 @@ def onMouseDown(button):
                     and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
+                    # Set a default value for tower_type
+                    tower_type = None
                     if isinstance(currentObject.projectileClass, ArrowProjectile):
                         tower_type = "Archer-tower"
                     elif isinstance(currentObject.projectileClass, CannonballProjectile):
                         tower_type = "Cannon"
                     elif isinstance(currentObject.projectileClass, MagicProjectile):
                         tower_type = "Wizard-tower"
-                    
 
-                    if check_resources(tower_type):
+                    # Check if tower_type was assigned
+                    if tower_type and check_resources(tower_type, tower_costs):
                         towersPlace["isPlaced"] = True
                         towersPlace["tower"] = currentObject
                         currentObject.setPosition(towerPosition)
                         deduct_resources(tower_type)
-                        updateTowerIcons()  # Update icons after placing
+                        updateTowerIcons(tower_costs)  # Update icons after placing
                         currentObject = None
                     else:
                         display_warning("Insufficient resources to place the tower.")
@@ -234,4 +233,4 @@ def onKeyDown(key):
 
 vizact.onupdate(0, updateTowers)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
-set_resource_update_callback(updateTowerIcons)
+set_resource_update_callback(updateTowerIcons, tower_costs)
