@@ -10,9 +10,6 @@ from resources import (
     updateTowerIcons,
     set_resource_update_callback,
     tower_icons,
-    get_resources,
-    set_resources,
-    check_resources,
 )
 from projectiles import (
     ArrowProjectile,
@@ -21,32 +18,46 @@ from projectiles import (
     projectiles,
 )
 
+
 towersPlaces = []
 currentObject = None
 camMode = "robot"
 
-# Coordinates for tower placement
 towerCoordinates = [
-    [12.7, -1.0, 1.1], [10.6, -1.0, 5.0], [7.0, -1.0, 8.0], [1.6, -1.0, 8.0],
-    [-3.1, -1.0, 3.5], [-7.3, -1.0, 3.5], [-5.1, -1.0, 6.8], [-2.5, -1.0, 9.8],
-    [1.1, -1.0, 11.7], [5.4, -1.0, 11.8], [8.5, -1.0, 10.9], [12.1, -1.0, 9.0],
-    [14.6, -1.0, 7.1], [15.6, -1.0, -0.8], [12.8, -1.0, -3.8], [9.7, -1.0, -6.8],
-    [6.0, -1.0, -8.3], [1.1, -1.0, -8.3], [-5.0, -1.0, -3.7], [-7.8, -1.0, -2.2],
-    [-4.4, -1.0, -0.8], [7.7, -1.0, -3.8], [4.8, -1.0, -5.3], [1.0, -1.0, -5.3],
-    [-1.0, -1.0, -3.4], [10.0, -1.0, -1.1], [0.5, -1.0, 2.0], [3.5, -1.0, 3.1],
-    [6.0, -1.0, 4.2], [0.8, -1.0, -1.1], [6.3, -1.0, -0.1], [-2.8, -1.0, -6.7]
+    [12.7, -1.0, 1.1],
+    [10.6, -1.0, 5.0],
+    [7.0, -1.0, 8.0],
+    [1.6, -1.0, 8.0],
+    [-3.1, -1.0, 3.5],
+    [-7.3, -1.0, 3.5],
+    [-5.1, -1.0, 6.8],
+    [-2.5, -1.0, 9.8],
+    [1.1, -1.0, 11.7],
+    [5.4, -1.0, 11.8],
+    [8.5, -1.0, 10.9],
+    [12.1, -1.0, 9.0],
+    [14.6, -1.0, 7.1],
+    [15.6, -1.0, -0.8],
+    [12.8, -1.0, -3.8],
+    [9.7, -1.0, -6.8],
+    [6.0, -1.0, -8.3],
+    [1.1, -1.0, -8.3],
+    [-5.0, -1.0, -3.7],
+    [-7.8, -1.0, -2.2],
+    [-4.4, -1.0, -0.8],
+    [7.7, -1.0, -3.8],
+    [4.8, -1.0, -5.3],
+    [1.0, -1.0, -5.3],
+    [-1.0, -1.0, -3.4],
+    [10.0, -1.0, -1.1],
+    [0.5, -1.0, 2.0],
+    [3.5, -1.0, 3.1],
+    [6.0, -1.0, 4.2],
+    [0.8, -1.0, -1.1],
+    [6.3, -1.0, -0.1],
+    [-2.8, -1.0, -6.7],
 ]
 
-tower_costs = {
-    "Archer-tower": {"Wood": 5, "Stone": 3},
-    "Cannon": {"Wood": 5, "Stone": 8},
-    "Wizard-tower": {"Wood": 8, "Stone": 12},
-}
-
-insufficient_text = viz.addText("", pos=[0.5, 0.1, 0], parent=viz.SCREEN)
-insufficient_text.fontSize(24)
-insufficient_text.color(viz.RED)
-insufficient_text.visible(False)
 
 class Tower:
     def __init__(self, model, scale, projectileClass):
@@ -90,8 +101,12 @@ class Tower:
     def attack(self, targetCreep):
         startPos = self.model.getPosition()
         startPos = [startPos[0], startPos[1] + 0.5, startPos[2]]
+
         newProjectile = self.projectileClass(startPos, targetCreep)
         projectiles.append(newProjectile)
+
+        # self.model.lookAt(targetCreep.model.getPosition())
+
 
 for coord in towerCoordinates:
     towersPlace = vizshape.addCube(size=0.5)
@@ -99,17 +114,6 @@ for coord in towerCoordinates:
     towersPlace.alpha(0)
     towersPlaces.append({"towersPlace": towersPlace, "isPlaced": False, "tower": None})
 
-def deduct_resources(tower_type):
-    wood_count, stone_count = get_resources()
-    costs = tower_costs.get(tower_type, {})
-    new_wood = wood_count - costs["Wood"]
-    new_stone = stone_count - costs["Stone"]
-    set_resources(new_wood, new_stone)
-
-def display_warning(message):
-    insufficient_text.message(message)
-    insufficient_text.visible(True)
-    vizact.ontimer(2, lambda: insufficient_text.visible(False))
 
 def changeCamera():
     global camMode, currentObject, tower_icons
@@ -121,11 +125,11 @@ def changeCamera():
             towersPlace["towersPlace"].alpha(1)
 
         if not tower_icons:
-            createTowerIcons(tower_costs)
+            createTowerIcons()
 
         for icon in tower_icons:
             icon.visible(viz.ON)
-        updateTowerIcons(tower_costs)
+        updateTowerIcons()
 
     else:
         viewLink = viz.link(robot, viz.MainView)
@@ -144,6 +148,7 @@ def changeCamera():
             currentObject.remove()
             currentObject = None
 
+
 def intersect(lineStart, lineEnd, planePoint, planeNormal):
     lineDir = viz.Vector(lineEnd) - viz.Vector(lineStart)
     lineDir.normalize()
@@ -154,6 +159,7 @@ def intersect(lineStart, lineEnd, planePoint, planeNormal):
     linePointOfDir = -planeNormal.dot(linePoint) / planeNormal.dot(lineDir)
     intersection = viz.Vector(lineStart) + linePointOfDir * lineDir
     return intersection
+
 
 def updateObjectPosition():
     global currentObject
@@ -168,13 +174,19 @@ def updateObjectPosition():
         if intersectionPoint:
             currentObject.setPosition(intersectionPoint)
 
+
 def updateTowers():
     currentTime = viz.tick()
     for towersPlace in towersPlaces:
         if towersPlace["isPlaced"] and towersPlace["tower"]:
             towersPlace["tower"].update(currentTime)
 
-from projectiles import ArrowProjectile, CannonballProjectile, MagicProjectile
+cost={
+    "Tower": "Archer-tower" "Cannon" "Wizard-tower",
+    "Wood": "5" "5" "8",
+    "Stone": "3" "8" "12"
+}
+
 
 def onMouseDown(button):
     global currentObject
@@ -187,37 +199,17 @@ def onMouseDown(button):
                     and vizmat.Distance(towerPosition, currentObject.getPosition())
                     < 0.5
                 ):
-                    # Check and print projectile class to confirm correct type
-                    print("Current object's projectile class:", type(currentObject.projectileClass))
-
-                    # Update tower type detection with imported class names
-                    if isinstance(currentObject.projectileClass, ArrowProjectile):
-                        tower_type = "Archer-tower"
-                    elif isinstance(currentObject.projectileClass, CannonballProjectile):
-                        tower_type = "Cannon"
-                    elif isinstance(currentObject.projectileClass, MagicProjectile):
-                        tower_type = "Wizard-tower"
-                    else:
-                        print("Warning: Unknown projectile class type.")
-                        tower_type = None
-
-                    if tower_type:
-                        # Check if resources are sufficient
-                        if check_resources(tower_type, tower_costs):
-                            towersPlace["isPlaced"] = True
-                            towersPlace["tower"] = currentObject
-                            currentObject.setPosition(towerPosition)
-                            currentObject.visible(viz.ON)
-                            print(f"Placed {tower_type} at {towerPosition}")
-                            deduct_resources(tower_type)
-                            print(f"Resources deducted for {tower_type}. Updated resources:")
-                            print_resource_status()
-                            currentObject = None
-                        else:
-                            print("Insufficient resources for placement.")
-                    else:
-                        print("Failed to place tower: Unknown tower type.")
+                    towersPlace["isPlaced"] = True
+                    towersPlace["tower"] = currentObject
+                    currentObject.setPosition(towerPosition)
+                    currentObject = None
                     break
+cost={
+    "Tower": "Archer-tower" "Cannon" "Wizard-tower",
+    "Wood": "5" "5" "8",
+    "Stone": "3" "8" "12"
+}
+
 def onKeyDown(key):
     global currentObject, camMode
     if key == "q":
@@ -243,6 +235,7 @@ def onKeyDown(key):
             currentObject.visible(viz.ON)
             updateObjectPosition()
 
+
 vizact.onupdate(0, updateTowers)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
-set_resource_update_callback(updateTowerIcons, tower_costs)
+set_resource_update_callback(updateTowerIcons)
