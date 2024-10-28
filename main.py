@@ -34,7 +34,7 @@ head_light.intensity(0.5)
 
 dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 135, 0))
 dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 0, 45))
-dir_light.direction(0, -1, 0)
+dir_light.direction(0, -1, 0)   
 dir_light.intensity(0.5)
 
 # Function calls
