@@ -1,6 +1,7 @@
 import viz
 import vizact
-from creeps import Creep, creeps, creepPath
+import random
+from creeps import Creep, creeps, creepPath, creepPathShort
 
 
 class WaveManager:
@@ -72,7 +73,11 @@ class WaveManager:
 
     def spawnCreep(self):
         if self.creepsToSpawn > 0:
-            newCreep = Creep(creepPath)
+            shortPath = random.random() < 0.2
+            if shortPath:
+                newCreep = Creep(creepPathShort)
+            else:
+                newCreep = Creep(creepPath)
             newCreep.model.setPosition(creepPath[0])
 
             newCreep.health = int(100 * self.difficultyMultiplier)
