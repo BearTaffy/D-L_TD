@@ -13,11 +13,7 @@ add tower removal
 
 add intro screen where displays info about how to play the game
 
-make waves spawn diffrent mobs
-
-add a chance a creep fill chose a difrent path
-
-each mob has its own speed, health and damage
+turn all objects into osgb through vizard
 
 make towers upgradable
 
