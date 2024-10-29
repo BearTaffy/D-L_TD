@@ -2,56 +2,39 @@ import viz
 import vizhtml
 import viztask
 
-
-
 # Display the title screen with an image and text
 def TitleScreenTask():
     html = """
     <html>
     <head>
         <style>
-            html {
+            body {
+                background: url('img/title.png') no-repeat center center;
+                background-size: cover;
                 margin: 0;
                 padding: 0;
-                width: 50px;
-                height: 943px;
-                overflow: hidden;
-                position: relative;
-            }
-    
-            .container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 50px;
-                height: 943px;
+                display: flex;
                 align-items: center;
-                flex-direction: column;
-                background: url('img/title.png') no-repeat center center fixed;
-                background-size: cover;
+                justify-content: center;
+                height: 100vh;
+                overflow: hidden;
             }
+            
             h1 {
-                font-size: 8vw;
-                color: white;
-                margin-bottom: 2vh;
-            }
-            img {
-                width: 50px;
-                height: 943px;
-            }
-            button {
-                font-size: 4vw;
-                padding: 1vw 2vw;
-                margin-top: 2vh;
+                font-size: 50px;
+                color: #ffffff;
+                text-align: center;
+                background-color: rgba(0, 0, 0, 0.5); /* Optional background for text readability */
+                padding: 1vh 2vw;
+                border-radius: 10px;
+                margin-top: 15%;
+                margin-left: 7%;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Tower Defense</h1>
-            
-            <button onclick="window.location.href='javascript:parent.viz.sendEvent(\\'startGame\\')'">Start Game</button>
-        </div>
+        <h1>Tower Defense</h1>
+        <button>test</button>
     </body>
     </html>
     """
@@ -65,4 +48,5 @@ def TitleScreenTask():
     # Proceed to main game
     viz.logNotice('Game is starting...')
 
-# viztask.schedule(TitleScreenTask())
+# Schedule the task to run
+viztask.schedule(TitleScreenTask())
