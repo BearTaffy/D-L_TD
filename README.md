@@ -3,7 +3,7 @@
 ## TODO
 
 ```
-add sound
+add sound (menu to disable sounds)
 
 When in downCam show green square where tower can be placed
 
