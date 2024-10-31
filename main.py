@@ -30,7 +30,7 @@ viz.mouse.setOverride(viz.ON)
 # Lights
 head_light = viz.MainView.getHeadLight()
 viz.MainView.getHeadLight().disable()
-head_light.intensity(0.5)
+head_light.intensity(0.5)   
 
 dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 135, 0))
 dir_light = viz.addDirectionalLight(color=viz.WHITE, euler=(45, 0, 45))
