@@ -44,14 +44,23 @@ def TitleScreenTask():
                 margin-left:42%;
                 margin-top: 3%;
             }
-
-            
         </style>
+        <script>
+            function startGame() {
+                alert("Start Game button clicked");
+                window.parent.viz.sendEvent('startGame');
+            }
+            
+            function howToPlay() {
+                alert("How to Play button clicked");
+                window.parent.viz.sendEvent('howToPlay');
+            }
+        </script>
     </head>
     <body>
         <h1>Tower Defense</h1>
-        <button onclick="window.location.href='javascript:parent.viz.sendEvent(\\'startGame\\')'">Start Game</button>
-        <button onclick="window.location.href='javascript:parent.viz.sendEvent(\\'howToPlay\\')'">How to play</button>
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="howToPlay()">How to play</button>
     </body>
     </html>
     """
@@ -61,12 +70,17 @@ def TitleScreenTask():
 
     # Wait for either "Start Game" or "How to play" event
     while True:
-        event = yield viztask.waitAny([viztask.waitEvent('startGame'), viztask.waitEvent('howToPlay')])
+        # Wait for 'startGame' or 'howToPlay' event separately
+        event = yield viztask.waitAny([
+            viztask.waitEvent('startGame'),
+            viztask.waitEvent('howToPlay')
+        ])
         
         if event.condition == 'startGame':
             viz.logNotice('Game is starting...')
             break
         elif event.condition == 'howToPlay':
+            viz.logNotice('How to play selected')
             yield howToPlayTask()  # Call howToPlayTask when 'How to play' is clicked
 
     # Proceed to main game

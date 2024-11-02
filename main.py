@@ -8,7 +8,6 @@ from creeps import spawnCreep, updateCreeps
 from waves import updateWaveSystem
 from infoScreen import TitleScreenTask
 
-
 # Environment
 mapp = viz.add("models/environment/map.obj")
 mapp.setPosition(0, -1, 0)
