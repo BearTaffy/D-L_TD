@@ -1,12 +1,13 @@
 import viz
 import vizact
 import viztask
+import infoScreen 
 
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
 from creeps import spawnCreep, updateCreeps
 from waves import updateWaveSystem
-from infoScreen import TitleScreenTask
+
 
 # Environment
 mapp = viz.add("models/environment/map.obj")
@@ -53,6 +54,6 @@ vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
 # vizact.ontimer(5, spawnCreep)
 vizact.onupdate(0, updateCreeps)
 vizact.onupdate(0, updateWaveSystem)
-viztask.schedule(TitleScreenTask())
+
 if __name__ == "__main__":
     viz.go()
