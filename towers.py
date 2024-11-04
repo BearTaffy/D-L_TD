@@ -64,6 +64,12 @@ towerCoordinates = [
     [-2.8, -1.0, -6.7],
 ]
 
+removal_mode_text = viz.addText("REMOVAL MODE", pos=[0.5, 0.9, 0], parent=viz.SCREEN)
+removal_mode_text.alignment(viz.ALIGN_CENTER_TOP)
+removal_mode_text.fontSize(24)
+removal_mode_text.color(viz.RED)
+removal_mode_text.visible(viz.OFF)
+
 
 class Tower:
     def __init__(self, model, scale, projectileClass, towerType):
@@ -154,6 +160,7 @@ def changeCamera():
         viewLink.preTrans([0, 0, -3])
         viewLink.preEuler([0, -20, 0])
         camMode = "robot"
+        removal_mode_text.visible(viz.OFF)
 
         for towersPlace in towersPlaces:
             towersPlace["towersPlace"].alpha(0)
@@ -275,7 +282,7 @@ def removeTower(towersPlace):
 def toggleRemovalMode():
     global removalMode
     removalMode = not removalMode
-
+    removal_mode_text.visible(removalMode)
     for towersPlace in towersPlaces:
         if towersPlace["tower"]:
             towersPlace["tower"].highlight(removalMode)
