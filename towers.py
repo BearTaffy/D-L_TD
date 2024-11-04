@@ -4,7 +4,7 @@ import vizmat
 import vizact
 
 from creeps import creeps
-from camera import changeCamera, downCam, robot, camMode
+from camera import downCam, robot, camMode
 import resources
 from resources import (
     createTowerIcons,
@@ -27,7 +27,6 @@ towerCosts = {
 
 towersPlaces = []
 currentObject = None
-camMode = "robot"
 removalMode = False
 
 towerCoordinates = [
@@ -77,7 +76,6 @@ class Tower:
         self.lastAttackTime = 0
         self.highlighted = False
 
-
     def setPosition(self, pos):
         self.model.setPosition(pos)
 
@@ -92,10 +90,10 @@ class Tower:
 
     def highlight(self, state):
         if state:
-            self.model.emissive([1,0,0,1])  
+            self.model.emissive([1, 0, 0, 1])
             self.highlighted = True
         else:
-            self.model.emissive([0,0,0,1]) 
+            self.model.emissive([0, 0, 0, 1])
             self.highlighted = False
 
     def update(self, currentTime):
@@ -206,13 +204,12 @@ def onMouseDown(button):
     global currentObject, removalMode
     if button == viz.MOUSEBUTTON_LEFT:
         if removalMode:
-            # Handle tower removal
             mouseState = viz.mouse.getPosition()
             line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
             planePoint = [0, -1, 0]
             planeNormal = [0, 1, 0]
             intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
-            
+
             if intersectionPoint:
                 for towersPlace in towersPlaces:
                     if towersPlace["isPlaced"]:
@@ -222,11 +219,12 @@ def onMouseDown(button):
                             removeTower(towersPlace)
                             break
         elif currentObject:
-            # Original placement logic
             for towersPlace in towersPlaces:
                 if not towersPlace["isPlaced"]:
                     towerPosition = towersPlace["towersPlace"].getPosition()
-                    distance = vizmat.Distance(towerPosition, currentObject.getPosition())
+                    distance = vizmat.Distance(
+                        towerPosition, currentObject.getPosition()
+                    )
                     if distance < 0.5:
                         if checkResources(currentObject.towerType):
                             towersPlace["isPlaced"] = True
@@ -256,13 +254,15 @@ def removeResources(towerType):
     resources.stone_count -= costs["stone"]
     resources.update_resources()
 
+
 def refundResources(towerType):
     costs = towerCosts[towerType]
-    refund_ratio = 0.75 
-    
-    resources.wood_count += int(costs["wood"] * refund_ratio)
-    resources.stone_count += int(costs["stone"] * refund_ratio)
+    refundPer = 0.75
+
+    resources.wood_count += int(costs["wood"] * refundPer)
+    resources.stone_count += int(costs["stone"] * refundPer)
     resources.update_resources()
+
 
 def removeTower(towersPlace):
     if towersPlace["tower"]:
@@ -271,26 +271,28 @@ def removeTower(towersPlace):
         towersPlace["tower"] = None
         towersPlace["isPlaced"] = False
 
+
 def toggleRemovalMode():
     global removalMode
     removalMode = not removalMode
-    
+
     for towersPlace in towersPlaces:
         if towersPlace["tower"]:
             towersPlace["tower"].highlight(removalMode)
+
 
 def onKeyDown(key):
     global currentObject, camMode, removalMode
     if key == "q":
         if removalMode:
-            toggleRemovalMode()  # Turn off removal mode when switching camera
+            toggleRemovalMode()
         changeCamera()
     elif key == " ":
         print(robot.getPosition())
     elif key == "x":
         if camMode == "downCam":
             toggleRemovalMode()
-    elif camMode == "downCam" and not removalMode:  # Only allow tower placement when not in removal mode
+    elif camMode == "downCam" and not removalMode:
         if key in ["1", "2", "3"]:
             if currentObject:
                 currentObject.remove()

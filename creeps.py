@@ -1,5 +1,6 @@
 import viz
 import random
+from sounds import hurt, death
 
 creeps = []
 
@@ -118,6 +119,7 @@ class Creep:
 
     def take_damage(self, damage):
         self.health -= damage
+        hurt.play("audio/hurt.mp3")
         if self.health <= 0:
             self.marked_for_removal = True
 
@@ -125,6 +127,7 @@ class Creep:
         if self.model:
             self.model.remove()
             self.model = None
+            death.play("audio/death.mp3")
 
 
 def spawnCreep():
