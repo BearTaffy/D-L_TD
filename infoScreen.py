@@ -4,7 +4,8 @@ import vizact
 
 # Global variables to hold references to screen elements for easier removal
 screen_elements = []
-game_started=False
+game_started = False
+
 
 def clearScreen():
     """Clear all elements on the screen."""
@@ -13,19 +14,22 @@ def clearScreen():
         element.remove()
     screen_elements = []
 
+
 def startGame():
     global game_started
     clearScreen()
     viz.MainWindow.clearcolor(viz.SKYBLUE)
-    viz.logNotice('Game is starting...')
-    game_started=True
+    viz.logNotice("Game is starting...")
+    game_started = True
     return game_started
 
+
 gameIsStart = startGame()
-    
+
 
 def howToPlay():
     viztask.schedule(displayHowToPlayScreen())
+
 
 def displayHowToPlayScreen():
     yield
@@ -38,7 +42,7 @@ def displayHowToPlayScreen():
     screen_elements.append(overlayPanel)
 
     try:
-        bgTexture = viz.addTexture('img/title.png')
+        bgTexture = viz.addTexture("img/title.png")
         overlayPanel.texture(bgTexture)
     except:
         viz.logNotice("Background texture 'img/title.png' not found, using solid color")
@@ -58,7 +62,10 @@ def displayHowToPlayScreen():
     howToPlayTitle.setPosition(0.5, 0.9, 0)
     screen_elements.append(howToPlayTitle)
 
-    rulesText = viz.addText('Rules and Controls:\n1. Use WASD to move.\n2. Press SPACE to shoot.\n3. Defend your base from enemies.', parent=viz.SCREEN)
+    rulesText = viz.addText(
+        "Rules and Controls:\n1. Use WASD to move.\n2. Press SPACE to shoot.\n3. Defend your base from enemies.",
+        parent=viz.SCREEN,
+    )
     rulesText.alignment(viz.ALIGN_CENTER_CENTER)
     rulesText.fontSize(24)
     rulesText.color(viz.WHITE)
@@ -71,7 +78,7 @@ def displayHowToPlayScreen():
     backButton.setScale(4, 2)  # Adjust scale for a better fit
     screen_elements.append(backButton)
 
-    backButtonLabel = viz.addText('Back', parent=viz.SCREEN)
+    backButtonLabel = viz.addText("Back", parent=viz.SCREEN)
     backButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
     backButtonLabel.setPosition(0.5, 0.3, 0)
     backButtonLabel.setScale(0.2, 0.2, 0)
@@ -83,6 +90,7 @@ def displayHowToPlayScreen():
 
 def onBackButton():
     viztask.schedule(displayTitleScreen())
+
 
 def displayTitleScreen():
     yield
@@ -97,12 +105,12 @@ def displayTitleScreen():
     screen_elements.append(overlayPanel)
 
     try:
-        bgTexture = viz.addTexture('img/title.png')
+        bgTexture = viz.addTexture("img/title.png")
         overlayPanel.texture(bgTexture)
     except:
         viz.logNotice("Background texture 'img/title.png' not found, using solid color")
 
-    titleText = viz.addText('Tower Defense', parent=viz.SCREEN)
+    titleText = viz.addText("Tower Defense", parent=viz.SCREEN)
     titleText.alignment(viz.ALIGN_CENTER_TOP)
     titleText.fontSize(60)
     titleText.color(viz.WHITE)
@@ -115,7 +123,7 @@ def displayTitleScreen():
     startButton.setScale(4, 2)  # Adjust scale for a better fit
     screen_elements.append(startButton)
 
-    startButtonLabel = viz.addText('Start Game', parent=viz.SCREEN)
+    startButtonLabel = viz.addText("Start Game", parent=viz.SCREEN)
     startButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
     startButtonLabel.setPosition(0.5, 0.55, 0)
     startButtonLabel.setScale(0.2, 0.2, 0)
@@ -127,7 +135,7 @@ def displayTitleScreen():
     howToPlayButton.setScale(4, 2)  # Adjust scale for a better fit
     screen_elements.append(howToPlayButton)
 
-    howToPlayButtonLabel = viz.addText('How to Play', parent=viz.SCREEN)
+    howToPlayButtonLabel = viz.addText("How to Play", parent=viz.SCREEN)
     howToPlayButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
     howToPlayButtonLabel.setPosition(0.5, 0.4, 0)
     howToPlayButtonLabel.setScale(0.2, 0.2, 0)
@@ -137,11 +145,14 @@ def displayTitleScreen():
     vizact.onbuttondown(startButton, onStartButton)
     vizact.onbuttondown(howToPlayButton, onHowToPlayButton)
 
+
 def onStartButton():
     startGame()
 
+
 def onHowToPlayButton():
     howToPlay()
+
 
 # Schedule the title screen to display
 viztask.schedule(displayTitleScreen())
