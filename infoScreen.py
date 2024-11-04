@@ -50,7 +50,7 @@ def displayHowToPlayScreen():
     # Add a plane behind the text for better readability
     backgroundPlane = viz.addTexQuad(parent=viz.SCREEN)
     backgroundPlane.setPosition(0.5, 0.5, 4)
-    backgroundPlane.setScale(6, 5, 1)
+    backgroundPlane.setScale(7, 5.5, 1)
     backgroundPlane.color(viz.BLACK)  # Set to black for contrast
     backgroundPlane.alpha(0.5)  # Make it semi-transparent
     screen_elements.append(backgroundPlane)
@@ -63,7 +63,7 @@ def displayHowToPlayScreen():
     screen_elements.append(howToPlayTitle)
 
     rulesText = viz.addText(
-        "Rules and Controls:\n1. Use WASD to move.\n2. Press SPACE to shoot.\n3. Defend your base from enemies.",
+        "Rules and Controls:\n1. Use WASD to move.\n2. Defend your base from enemies.\n3. Collect wood and stone by standing by the tree and rocks.\n4. Press Q to go into top-down view to place towers.\n5. Select towers by pressing 1, 2, or 3.\n6.Press X to remove towers.",
         parent=viz.SCREEN,
     )
     rulesText.alignment(viz.ALIGN_CENTER_CENTER)
