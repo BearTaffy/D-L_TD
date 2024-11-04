@@ -3,21 +3,13 @@
 ## TODO
 
 ```
-material collection minigame
-
-add sound
+*menu to disable sounds*
 
 When in downCam show green square where tower can be placed
 
-add tower removal
-
-add intro screen where displays info about how to play the game
-
 turn all objects into osgb through vizard
 
-make towers upgradable
-
-make towers cost materials
+*make towers upgradable (maybe with a html windows)*
 
 fix projectile spawn / size
 
