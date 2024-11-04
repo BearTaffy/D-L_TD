@@ -16,6 +16,15 @@ class WaveManager:
         self.difficultyMultiplier = 1.0
         self.setupUI()
 
+    def initializeGame(self):
+        self.currentWave = 0
+        self.creepsToSpawn = 0
+        self.isWaveActive = False
+        self.waveStartTime = viz.tick()
+        self.lastSpawnTime = 0
+        self.difficultyMultiplier = 1.0
+        self.updateUI()
+
     def setupUI(self):
         self.panel = viz.addText("")
         self.panel.alignment(viz.ALIGN_LEFT_TOP)

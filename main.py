@@ -1,7 +1,7 @@
 import viz
 import vizact
 import viztask
-import infoScreen 
+import infoScreen
 
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
