@@ -199,12 +199,6 @@ def updateTowers():
         if towersPlace["isPlaced"] and towersPlace["tower"]:
             towersPlace["tower"].update(currentTime)
 
-cost={
-    "Tower": "Archer-tower" "Cannon" "Wizard-tower",
-    "Wood": "5" "5" "8",
-    "Stone": "3" "8" "12"
-}
-
 
 def onMouseDown(button):
     global currentObject, removalMode
