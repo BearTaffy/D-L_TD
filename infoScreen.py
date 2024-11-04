@@ -43,6 +43,14 @@ def displayHowToPlayScreen():
     except:
         viz.logNotice("Background texture 'img/title.png' not found, using solid color")
 
+    # Add a plane behind the text for better readability
+    backgroundPlane = viz.addTexQuad(parent=viz.SCREEN)
+    backgroundPlane.setPosition(0.5, 0.5, 4)
+    backgroundPlane.setScale(6, 5, 1)
+    backgroundPlane.color(viz.BLACK)  # Set to black for contrast
+    backgroundPlane.alpha(0.5)  # Make it semi-transparent
+    screen_elements.append(backgroundPlane)
+
     howToPlayTitle = viz.addText('How to Play', parent=viz.SCREEN)
     howToPlayTitle.alignment(viz.ALIGN_CENTER_TOP)
     howToPlayTitle.fontSize(50)
@@ -71,6 +79,7 @@ def displayHowToPlayScreen():
 
     # Use vizact.onbuttondown to assign the onBackButton function
     vizact.onbuttondown(backButton, onBackButton)
+
 
 def onBackButton():
     viztask.schedule(displayTitleScreen())
