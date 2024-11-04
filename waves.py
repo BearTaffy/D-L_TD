@@ -2,6 +2,8 @@ import viz
 import vizact
 import random
 from creeps import Creep, creeps, creepPath, creepPathShort, creepTypes
+from infoScreen import startGame, gameIsStart
+
 
 
 class WaveManager:
@@ -43,16 +45,16 @@ class WaveManager:
         self.panel.message(status)
 
     def startWave(self):
-        self.currentWave += 1
-        self.isWaveActive = True
-        self.waveStartTime = viz.tick()
+            self.currentWave += 1
+            self.isWaveActive = True
+            self.waveStartTime = viz.tick()
 
-        self.creepsToSpawn = 5 + (2 * self.currentWave)
+            self.creepsToSpawn = 5 + (2 * self.currentWave)
 
-        if self.currentWave % 5 == 0:
-            self.difficultyMultiplier += 0.2
+            if self.currentWave % 5 == 0:
+                self.difficultyMultiplier += 0.2
 
-        print(f"Wave {self.currentWave} started!")
+            print(f"Wave {self.currentWave} started!")
 
     def update(self):
         current_time = viz.tick()
@@ -119,5 +121,7 @@ wave_manager = WaveManager()
 
 
 def updateWaveSystem():
-    wave_manager.update()
-    wave_manager.updateUI()
+    if gameIsStart == True:
+        wave_manager.update()
+        wave_manager.updateUI()
+        

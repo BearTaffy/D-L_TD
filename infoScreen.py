@@ -4,6 +4,7 @@ import vizact
 
 # Global variables to hold references to screen elements for easier removal
 screen_elements = []
+game_started=False
 
 def clearScreen():
     """Clear all elements on the screen."""
@@ -13,9 +14,15 @@ def clearScreen():
     screen_elements = []
 
 def startGame():
+    global game_started
     clearScreen()
     viz.MainWindow.clearcolor(viz.SKYBLUE)
     viz.logNotice('Game is starting...')
+    game_started=True
+    return game_started
+
+gameIsStart = startGame()
+    
 
 def howToPlay():
     viztask.schedule(displayHowToPlayScreen())
