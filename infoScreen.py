@@ -1,9 +1,19 @@
 import viz
 import viztask
+import vizact
+
+# Global variables to hold references to screen elements for easier removal
+screen_elements = []
+
+def clearScreen():
+    """Clear all elements on the screen."""
+    global screen_elements
+    for element in screen_elements:
+        element.remove()
+    screen_elements = []
 
 def startGame():
-    if 'overlayPanel' in globals():
-        overlayPanel.remove()
+    clearScreen()
     viz.MainWindow.clearcolor(viz.SKYBLUE)
     viz.logNotice('Game is starting...')
 
@@ -12,11 +22,13 @@ def howToPlay():
 
 def displayHowToPlayScreen():
     yield
+    clearScreen()
 
     global overlayPanel
     overlayPanel = viz.addTexQuad(parent=viz.SCREEN)
     overlayPanel.setPosition(0.5, 0.5, 0)
     overlayPanel.setScale(13, 11, 1)
+    screen_elements.append(overlayPanel)
 
     try:
         bgTexture = viz.addTexture('img/title.png')
@@ -29,28 +41,36 @@ def displayHowToPlayScreen():
     howToPlayTitle.fontSize(50)
     howToPlayTitle.color(viz.WHITE)
     howToPlayTitle.setPosition(0.5, 0.9, 0)
+    screen_elements.append(howToPlayTitle)
 
     rulesText = viz.addText('Rules and Controls:\n1. Use WASD to move.\n2. Press SPACE to shoot.\n3. Defend your base from enemies.', parent=viz.SCREEN)
     rulesText.alignment(viz.ALIGN_CENTER_CENTER)
     rulesText.fontSize(24)
     rulesText.color(viz.WHITE)
     rulesText.setPosition(0.5, 0.6, 0)
+    screen_elements.append(rulesText)
 
-    backButton, backButtonLabel = createButton('Back', [0.5, 0.3, 0], fontSize=24, scale=[0.3, 0.1, 1])
+    # Create a back button using viz.addButton (VizCheckBox) and add a label
+    backButton = viz.addButton()
+    backButton.setPosition(0.5, 0.3, 0)
+    backButton.setScale(4, 2)  # Adjust scale for a better fit
+    screen_elements.append(backButton)
 
-    def onBackButton():
-        howToPlayTitle.remove()
-        rulesText.remove()
-        backButton.remove()
-        backButtonLabel.remove()
-        if 'overlayPanel' in globals():
-            overlayPanel.remove()
-        viztask.schedule(displayTitleScreen())
+    backButtonLabel = viz.addText('Back', parent=viz.SCREEN)
+    backButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
+    backButtonLabel.setPosition(0.5, 0.3, 0)
+    backButtonLabel.setScale(0.2, 0.2, 0)
+    screen_elements.append(backButtonLabel)
 
-    registerButtonClick(backButton, onBackButton)
+    # Use vizact.onbuttondown to assign the onBackButton function
+    vizact.onbuttondown(backButton, onBackButton)
+
+def onBackButton():
+    viztask.schedule(displayTitleScreen())
 
 def displayTitleScreen():
     yield
+    clearScreen()
 
     viz.MainWindow.clearcolor(viz.BLACK)
 
@@ -58,6 +78,7 @@ def displayTitleScreen():
     overlayPanel = viz.addTexQuad(parent=viz.SCREEN)
     overlayPanel.setPosition(0.5, 0.5, 0)
     overlayPanel.setScale(13, 11, 1)
+    screen_elements.append(overlayPanel)
 
     try:
         bgTexture = viz.addTexture('img/title.png')
@@ -70,63 +91,41 @@ def displayTitleScreen():
     titleText.fontSize(60)
     titleText.color(viz.WHITE)
     titleText.setPosition(0.5, 0.85, 0)
+    screen_elements.append(titleText)
 
-    startButton, startButtonLabel = createButton('Start Game', [0.5, 0.55, 0], fontSize=30, scale=[2, 1, 0.8])
-    howToPlayButton, howToPlayButtonLabel = createButton('How to Play', [0.5, 0.4, 0], fontSize=30, scale=[2, 1, 0.8])
+    # Create Start Game button with a label
+    startButton = viz.addButton()
+    startButton.setPosition(0.5, 0.55, 0)
+    startButton.setScale(4, 2)  # Adjust scale for a better fit
+    screen_elements.append(startButton)
 
-    # Define button callbacks separately
-    def onStartButton():
-        titleText.remove()
-        startButton.remove()
-        startButtonLabel.remove()
-        howToPlayButton.remove()
-        howToPlayButtonLabel.remove()
-        if 'overlayPanel' in globals():
-            overlayPanel.remove()
-        startGame()
+    startButtonLabel = viz.addText('Start Game', parent=viz.SCREEN)
+    startButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
+    startButtonLabel.setPosition(0.5, 0.55, 0)
+    startButtonLabel.setScale(0.2, 0.2, 0)
+    screen_elements.append(startButtonLabel)
 
-    def onHowToPlayButton():
-        titleText.remove()
-        startButton.remove()
-        startButtonLabel.remove()
-        howToPlayButton.remove()
-        howToPlayButtonLabel.remove()
-        if 'overlayPanel' in globals():
-            overlayPanel.remove()
-        howToPlay()
+    # Create How to Play button with a label
+    howToPlayButton = viz.addButton()
+    howToPlayButton.setPosition(0.5, 0.4, 0)
+    howToPlayButton.setScale(4, 2)  # Adjust scale for a better fit
+    screen_elements.append(howToPlayButton)
 
-    # Register the individual button clicks with their callbacks
-    registerButtonClick(startButton, onStartButton)
-    registerButtonClick(howToPlayButton, onHowToPlayButton)
+    howToPlayButtonLabel = viz.addText('How to Play', parent=viz.SCREEN)
+    howToPlayButtonLabel.alignment(viz.ALIGN_CENTER_CENTER)
+    howToPlayButtonLabel.setPosition(0.5, 0.4, 0)
+    howToPlayButtonLabel.setScale(0.2, 0.2, 0)
+    screen_elements.append(howToPlayButtonLabel)
 
-def createButton(text, position, fontSize=24, scale=[0.3, 0.1, 1]):
-    buttonQuad = viz.addTexQuad(parent=viz.SCREEN)
-    buttonQuad.color(viz.SKYBLUE)
-    buttonQuad.setPosition(position)
-    buttonQuad.setScale(scale)
+    # Use vizact.onbuttondown to assign the functions
+    vizact.onbuttondown(startButton, onStartButton)
+    vizact.onbuttondown(howToPlayButton, onHowToPlayButton)
 
-    buttonLabel = viz.addText(text, parent=viz.SCREEN)
-    buttonLabel.alignment(viz.ALIGN_CENTER_CENTER)
-    buttonLabel.fontSize(fontSize)
-    buttonLabel.color(viz.BLACK)
-    buttonLabel.setPosition(position)
+def onStartButton():
+    startGame()
 
-    return buttonQuad, buttonLabel
-
-def registerButtonClick(button, callback):
-    def onClick(e):
-        pos = button.getPosition(mode=viz.SCREEN)
-        scale = button.getScale()
-
-        minX, maxX = pos[0] - scale[0] / 2, pos[0] + scale[0] / 2
-        minY, maxY = pos[1] - scale[1] / 2, pos[1] + scale[1] / 2
-
-        mousePos = viz.mouse.getPosition()
-
-        if minX <= mousePos[0] <= maxX and minY <= mousePos[1] <= maxY:
-            callback()
-
-    viz.callback(viz.MOUSEDOWN_EVENT, onClick)
+def onHowToPlayButton():
+    howToPlay()
 
 # Schedule the title screen to display
 viztask.schedule(displayTitleScreen())
