@@ -9,7 +9,7 @@ projectiles = []
 
 
 class Projectile:
-    def __init__(self, startPos, target, speed, damage, model):
+    def __init__(self, startPos, target, speed, damage, model, sound):
         self.model = viz.add(model)
         self.model.setPosition(startPos)
         self.model.setScale(0.05, 0.05, 0.05)
@@ -17,8 +17,11 @@ class Projectile:
         self.speed = speed
         self.damage = damage
         self.is_active = True
+        self.sound = sound
 
     def update(self):
+        player = viz.addSoundMixer()
+        player.play(self.sound, viz.SOUND_PRELOAD)
         if not self.is_active or not self.target:
             self.remove()
             return True
@@ -33,6 +36,7 @@ class Projectile:
 
         if direction.length() < 0.2:
             self.hit()
+            player.play(self.sound)
             return True
 
         direction.normalize()
@@ -66,6 +70,7 @@ class ArrowProjectile(Projectile):
             speed=0.8,
             damage=10,
             model="models/projectiles/arrow.obj",
+            sound="audio/arrow.mp3",
         )
         if not self.model:
             self.model = vizshape.addCone(height=0.2, radius=0.05)
@@ -81,6 +86,7 @@ class CannonballProjectile(Projectile):
             speed=0.5,
             damage=40,
             model="models/projectiles/cannon_ball.obj",
+            sound="audio/cannon.mp3",
         )
         if not self.model:
             self.model = vizshape.addSphere(radius=0.1)
@@ -96,6 +102,7 @@ class MagicProjectile(Projectile):
             speed=0.6,
             damage=30,
             model="models/projectiles/wizard_bolt.obj",
+            sound="audio/wizard.mp3",
         )
         if not self.model:
             self.model = vizshape.addSphere(radius=0.08)

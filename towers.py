@@ -4,7 +4,7 @@ import vizmat
 import vizact
 
 from creeps import creeps
-from camera import changeCamera, downCam, robot, camMode
+from camera import downCam, robot, camMode
 import resources
 from resources import (
     createTowerIcons,
@@ -27,7 +27,6 @@ towerCosts = {
 
 towersPlaces = []
 currentObject = None
-camMode = "robot"
 removalMode = False
 
 towerCoordinates = [
@@ -258,10 +257,10 @@ def removeResources(towerType):
 
 def refundResources(towerType):
     costs = towerCosts[towerType]
-    refund_ratio = 0.75
+    refundPer = 0.75
 
-    resources.wood_count += int(costs["wood"] * refund_ratio)
-    resources.stone_count += int(costs["stone"] * refund_ratio)
+    resources.wood_count += int(costs["wood"] * refundPer)
+    resources.stone_count += int(costs["stone"] * refundPer)
     resources.update_resources()
 
 
