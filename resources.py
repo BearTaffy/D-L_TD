@@ -60,18 +60,29 @@ def add_wood():
 
 
 def start_collecting_wood():
-    # This will call add_wood every 2 seconds as long as collecting_wood is True
-    def wood_timer():
+    global wood_timer, stone_timer
+
+    # Clear any existing timers to avoid duplication
+    if wood_timer:
+        wood_timer.remove()
+        wood_timer = None
+
+    if stone_timer:
+        stone_timer.remove()
+        stone_timer = None
+
+    # Define a function for repeated collection
+    def wood_collection_timer():
         if collecting_wood:
-            add_wood()
+            add_wood()  # Add wood every 2 seconds if in the area
 
-    def stone_timer():
+    def stone_collection_timer():
         if collecting_stone:
-            add_wood()
+            add_wood()  # Add stone every 3 seconds if in the area
 
-    vizact.ontimer(2, wood_timer)
-    vizact.ontimer(3, stone_timer)
-
+    # Set new timers
+    wood_timer = vizact.ontimer(2, wood_collection_timer)
+    stone_timer = vizact.ontimer(3, stone_collection_timer)
 
 # Enter sensor function
 def onEnterSensor(e):
@@ -90,13 +101,12 @@ def onEnterSensor(e):
 def onExitSensor(e):
     global collecting_wood, wood_timer, collecting_stone, stone_timer
     if e.sensor.name == "Circle":
-        # viz.logNotice("Left wood collection area")
         collecting_wood = False
         if wood_timer:
             wood_timer.remove()
             wood_timer = None
+
     if e.sensor.name == "Circle2":
-        # viz.logNotice("Left stone collection area")
         collecting_stone = False
         if stone_timer:
             stone_timer.remove()
