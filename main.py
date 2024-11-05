@@ -58,5 +58,5 @@ vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
 vizact.onupdate(0, updateCreeps)
 vizact.onupdate(0, updateWaveSystem)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     viz.go()

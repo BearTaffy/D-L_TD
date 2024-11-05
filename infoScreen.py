@@ -1,8 +1,11 @@
 import viz
 import viztask
 import vizact
+import towers
+import resources
 
-from waves import wave_manager
+from waves import wave_manager, base_health
+from creeps import creeps
 
 # Global variables to hold references to screen elements for easier removal
 screen_elements = []
@@ -15,13 +18,6 @@ def clearScreen():
     for element in screen_elements:
         element.remove()
     screen_elements = []
-
-
-def startGame():
-    clearScreen()
-    viz.MainWindow.clearcolor(viz.SKYBLUE)
-    viz.logNotice("Game is starting...")
-    wave_manager.initializeGame()
 
 
 def howToPlay():
@@ -135,6 +131,15 @@ def displayTitleScreen():
     vizact.onbuttondown(howToPlayButton, onHowToPlayButton)
 
 
+def startGame():
+    clearScreen()
+    viz.MainWindow.clearcolor(viz.SKYBLUE)
+    viz.logNotice("Game is starting...")
+    wave_manager.initializeGame()
+    base_health.reset()
+    resetGameState()
+
+
 def onStartButton():
     startGame()
 
@@ -143,5 +148,67 @@ def onHowToPlayButton():
     howToPlay()
 
 
-# Schedule the title screen to display
+# Game Over/Reset
+def resetGameState():
+
+    resources.wood_count = 10
+    resources.stone_count = 10
+    resources.update_resources()
+
+    for towersPlace in towers.towersPlaces:
+        if towersPlace["isPlaced"]:
+            if towersPlace["tower"]:
+                towersPlace["tower"].remove()
+                towersPlace["tower"] = None
+            towersPlace["isPlaced"] = False
+
+
+def gameOver():
+    for creep in creeps[:]:
+        creep.remove()
+    creeps.clear()
+    viztask.schedule(displayGameOverScreen())
+
+
+def displayGameOverScreen():
+    yield
+    clearScreen()
+
+    viz.MainWindow.clearcolor(viz.BLACK)
+
+    global overlayPanel
+    overlayPanel = viz.addTexQuad(parent=viz.SCREEN)
+    overlayPanel.setPosition(0.5, 0.5, 0)
+    overlayPanel.setScale(13, 11, 1)
+    screen_elements.append(overlayPanel)
+
+    try:
+        bgTexture = viz.addTexture("img/game over.jpg")
+        overlayPanel.texture(bgTexture)
+    except:
+        viz.logNotice("'img/game over.jpg' not found????????")
+
+    scoreText = viz.addText(
+        f"You survived {wave_manager.currentWave -1} waves!", parent=viz.SCREEN
+    )
+    scoreText.alignment(viz.ALIGN_CENTER_CENTER)
+    scoreText.fontSize(40)
+    scoreText.color(viz.WHITE)
+    scoreText.setPosition(0.5, 0.5, 0)
+    screen_elements.append(scoreText)
+
+    playAgainButton = viz.addButton()
+    playAgainButton.setPosition(0.5, 0.3, 0)
+    playAgainButton.setScale(4, 2)
+    screen_elements.append(playAgainButton)
+
+    playAgainLabel = viz.addText("Play Again", parent=viz.SCREEN)
+    playAgainLabel.alignment(viz.ALIGN_CENTER_CENTER)
+    playAgainLabel.setPosition(0.5, 0.3, 0)
+    playAgainLabel.setScale(0.2, 0.2, 0)
+    screen_elements.append(playAgainLabel)
+
+    vizact.onbuttondown(playAgainButton, startGame)
+
+
 viztask.schedule(displayTitleScreen())

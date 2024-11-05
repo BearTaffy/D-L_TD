@@ -5,8 +5,8 @@ import vizproximity
 from towers import robot
 
 
-wood_count = 0
-stone_count = 0
+wood_count = 10
+stone_count = 10
 collecting_wood = False
 collecting_stone = False
 tower_icons = []

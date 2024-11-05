@@ -1,6 +1,8 @@
 import viz
 import vizact
 import random
+
+import infoScreen
 from creeps import Creep, creeps, creepPath, creepPathShort, creepTypes
 
 
@@ -96,7 +98,8 @@ class WaveManager:
 
 class BaseHealth:
     def __init__(self):
-        self.health = 100
+        self.maxHealth = 100
+        self.health = self.maxHealth
         self.setupUI()
 
     def setupUI(self):
@@ -110,6 +113,18 @@ class BaseHealth:
         self.panel.depthFunc(viz.GL_ALWAYS)
         self.updateUI()
 
+    def reset(self):
+        self.health = self.maxHealth
+        self.updateUI()
+
+    def takeDamage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            print("Game Over - Base Destroyed!")
+            infoScreen.gameOver()
+        self.updateUI()
+
     def updateUI(self):
         status = f"HOME BASE\nHealth: {self.health}"
         self.panel.message(status)
@@ -119,6 +134,9 @@ class BaseHealth:
         if self.health <= 0:
             self.health = 0
             print("Game Over - Base Destroyed!")
+            import infoScreen
+
+            infoScreen.gameOver()
         self.updateUI()
 
 
