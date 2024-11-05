@@ -167,7 +167,7 @@ class Tower:
             self.attackCooldown = 1.0
             self.damage = self.baseDamage
 
-        self.levelText.message(f"Lvl {self.level}")
+        self.levelText.message(f"Lvl {self.level + 1}")
 
     def canUpgrade(self):
         next_level = self.level + 1
