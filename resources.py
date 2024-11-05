@@ -118,8 +118,12 @@ def check_resources():
 def createTowerIcons():
     global tower_icons
 
+    # Import towerCosts here to avoid circular import at the top
+    from towers import towerCosts
+
     # Define the icons and their positions
     icon_paths = ["img/archer_tower.png", "img/cannon.png", "img/wizard_tower.png"]
+    tower_types = ["archer", "cannon", "wizard"]
 
     # Clear existing icons if they are present
     if tower_icons:
@@ -127,19 +131,26 @@ def createTowerIcons():
             icon.remove()
         tower_icons.clear()
 
-    # Add the icons to the top-right of the screen
-    for i, icon_path in enumerate(icon_paths):
+    # Add the icons and cost labels to the top-right of the screen
+    for i, (icon_path, tower_type) in enumerate(zip(icon_paths, tower_types)):
+        # Add the tower icon
         icon = viz.addTexture(icon_path)
         sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
         sprite.setPosition([0.85, 0.85 - i * 0.1, 0])  # Adjust position as needed
         sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
-        sprite.color(
-            viz.RED if not check_resources() else viz.GREEN
-        )  # Set initial color based on resources
-        sprite.alpha(
-            0.5
-        )  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
+        sprite.color(viz.RED if not check_resources() else viz.GREEN)  # Set initial color based on resources
+        sprite.alpha(0.5)  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
         tower_icons.append(sprite)
+
+        # Add the cost label next to the icon
+        costs = towerCosts[tower_type]
+        cost_text = f"Wood: {costs['wood']} Stone: {costs['stone']}"
+        cost_label = viz.addText(cost_text, parent=viz.SCREEN)
+        cost_label.setPosition([0.89, 0.85 - i * 0.1, 0])  # Position next to the icon
+        cost_label.fontSize(15)
+        cost_label.color(viz.WHITE)
+        tower_icons.append(cost_label)
+
 
 
 def updateTowerIcons():
