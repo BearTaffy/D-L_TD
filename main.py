@@ -1,7 +1,7 @@
 import viz
 import vizact
 import viztask
-import infoScreen 
+import infoScreen
 
 from towers import updateObjectPosition, onMouseDown, onKeyDown
 from resources import onEnterSensor, onExitSensor, manager
@@ -58,5 +58,5 @@ vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
 vizact.onupdate(0, updateCreeps)
 vizact.onupdate(0, updateWaveSystem)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     viz.go()

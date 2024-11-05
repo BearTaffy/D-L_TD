@@ -11,8 +11,8 @@ projectiles = []
 class Projectile:
     def __init__(self, startPos, target, speed, damage, model, sound):
         self.model = viz.add(model)
-        self.model.setPosition(startPos)
-        self.model.setScale(0.05, 0.05, 0.05)
+        self.model.setPosition(startPos[0], 0.5, startPos[2])
+        self.model.setScale(0.1, 0.1, 0.1)
         self.target = target
         self.speed = speed
         self.damage = damage
