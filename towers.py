@@ -25,6 +25,24 @@ towerCosts = {
     "wizard": {"wood": 10, "stone": 8},
 }
 
+towerUpgrades = {
+    "archer": {
+        1: {"wood": 3, "stone": 2, "damage": 1.2, "range": 1.2, "speed": 1.2},
+        2: {"wood": 5, "stone": 4, "damage": 1.4, "range": 1.4, "speed": 1.4},
+        3: {"wood": 8, "stone": 6, "damage": 1.6, "range": 1.6, "speed": 1.6},
+    },
+    "cannon": {
+        1: {"wood": 5, "stone": 3, "damage": 1.3, "range": 1.1, "speed": 1.2},
+        2: {"wood": 8, "stone": 5, "damage": 1.6, "range": 1.2, "speed": 1.4},
+        3: {"wood": 12, "stone": 8, "damage": 2.0, "range": 1.3, "speed": 1.6},
+    },
+    "wizard": {
+        1: {"wood": 6, "stone": 4, "damage": 1.2, "range": 1.3, "speed": 1.3},
+        2: {"wood": 10, "stone": 7, "damage": 1.4, "range": 1.6, "speed": 1.6},
+        3: {"wood": 15, "stone": 10, "damage": 1.8, "range": 2.0, "speed": 2.0},
+    },
+}
+
 towersPlaces = []
 currentObject = None
 removalMode = False
@@ -72,15 +90,24 @@ removal_mode_text.visible(viz.OFF)
 
 
 class Tower:
-    def __init__(self, model, scale, projectileClass, towerType):
+    def __init__(self, model, projectileClass, towerType):
         self.model = viz.add(model)
-        self.model.setScale(scale)
         self.projectileClass = projectileClass
         self.towerType = towerType
+        self.level = 0
         self.attackRange = 5
         self.attackCooldown = 1.0
         self.lastAttackTime = 0
         self.highlighted = False
+        self.baseDamage = 10
+
+        self.levelText = viz.addText(f"Lvl {self.level}", parent=self.model)
+        self.levelText.alignment(viz.ALIGN_CENTER_CENTER)
+        self.levelText.setScale(0.5, 0.5, 0.5)
+        self.levelText.setPosition(0, 2, 0)
+        self.levelText.billboard(viz.BILLBOARD_VIEW)
+
+        self.updateStats()
 
     def setPosition(self, pos):
         self.model.setPosition(pos)
@@ -128,6 +155,57 @@ class Tower:
         projectiles.append(newProjectile)
 
         # self.model.lookAt(targetCreep.model.getPosition())
+
+    def updateStats(self):
+        if self.level > 0:
+            upgrade = towerUpgrades[self.towerType][self.level]
+            self.attackRange = 5 * upgrade["range"]
+            self.attackCooldown = 1.0 / upgrade["speed"]
+            self.damage = self.baseDamage * upgrade["damage"]
+        else:
+            self.attackRange = 5
+            self.attackCooldown = 1.0
+            self.damage = self.baseDamage
+
+        self.levelText.message(f"Lvl {self.level + 1}")
+
+    def canUpgrade(self):
+        next_level = self.level + 1
+        if next_level > 3:
+            return False
+
+        costs = towerUpgrades[self.towerType][next_level]
+        return (
+            resources.wood_count >= costs["wood"]
+            and resources.stone_count >= costs["stone"]
+        )
+
+    def upgrade(self):
+        if not self.canUpgrade():
+            return False
+
+        next_level = self.level + 1
+        costs = towerUpgrades[self.towerType][next_level]
+
+        resources.wood_count -= costs["wood"]
+        resources.stone_count -= costs["stone"]
+        resources.update_resources()
+
+        self.level += 1
+        self.updateStats()
+
+        self.model.addAction(
+            vizact.sequence(
+                vizact.sizeTo([1.2, 1.2, 1.2], time=0.1),
+                vizact.sizeTo([1.0, 1.0, 1.0], time=0.1),
+            )
+        )
+
+        return True
+
+    def remove(self):
+        self.levelText.remove()
+        self.model.remove()
 
 
 for coord in towerCoordinates:
@@ -288,6 +366,18 @@ def toggleRemovalMode():
             towersPlace["tower"].highlight(removalMode)
 
 
+def attack(self, targetCreep):
+    startPos = self.model.getPosition()
+    startPos = [startPos[0], startPos[1] + 0.5, startPos[2]]
+
+    newProjectile = self.projectileClass(startPos, targetCreep)
+    if self.level > 0:
+        upgrade = towerUpgrades[self.towerType][self.level]
+        newProjectile.damage *= upgrade["damage"]
+
+    projectiles.append(newProjectile)
+
+
 def onKeyDown(key):
     global currentObject, camMode, removalMode
     if key == "q":
@@ -311,25 +401,37 @@ def onKeyDown(key):
                 towerConfigs = {
                     "archer": (
                         "models/towers/archer_tower.obj",
-                        [0.2, 0.2, 0.2],
                         ArrowProjectile,
                     ),
                     "cannon": (
                         "models/towers/canon.obj",
-                        [0.25, 0.25, 0.25],
                         CannonballProjectile,
                     ),
                     "wizard": (
                         "models/towers/wizard_tower.obj",
-                        [0.2, 0.2, 0.2],
                         MagicProjectile,
                     ),
                 }
 
-                model, scale, projectile = towerConfigs[towerType]
-                currentObject = Tower(model, scale, projectile, towerType)
+                model, projectile = towerConfigs[towerType]
+                currentObject = Tower(model, projectile, towerType)
                 currentObject.visible(viz.ON)
                 updateObjectPosition()
+    if key == "u" and camMode == "downCam" and not removalMode:
+        mouseState = viz.mouse.getPosition()
+        line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
+        planePoint = [0, -1, 0]
+        planeNormal = [0, 1, 0]
+        intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
+
+        if intersectionPoint:
+            for towersPlace in towersPlaces:
+                if towersPlace["isPlaced"] and towersPlace["tower"]:
+                    towerPosition = towersPlace["towersPlace"].getPosition()
+                    distance = vizmat.Distance(towerPosition, intersectionPoint)
+                    if distance < 0.5:
+                        towersPlace["tower"].upgrade()
+                        break
 
 
 vizact.onupdate(0, updateTowers)
