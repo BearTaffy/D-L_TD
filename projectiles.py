@@ -67,8 +67,8 @@ class ArrowProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.8,
-            damage=10,
+            speed=1.0,
+            damage=15,
             model="models/projectiles/arrow.obj",
             sound="audio/arrow.mp3",
         )
@@ -83,8 +83,8 @@ class CannonballProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.5,
-            damage=40,
+            speed=0.6,
+            damage=45,
             model="models/projectiles/cannon_ball.obj",
             sound="audio/cannon.mp3",
         )
@@ -99,8 +99,8 @@ class MagicProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.6,
-            damage=30,
+            speed=0.7,
+            damage=35,
             model="models/projectiles/wizard_bolt.obj",
             sound="audio/wizard.mp3",
         )

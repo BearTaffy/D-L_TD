@@ -20,26 +20,90 @@ from projectiles import (
 )
 
 towerCosts = {
-    "archer": {"wood": 5, "stone": 3},
-    "cannon": {"wood": 8, "stone": 5},
-    "wizard": {"wood": 10, "stone": 8},
+    "archer": {"wood": 4, "stone": 3},
+    "cannon": {"wood": 5, "stone": 5},
+    "wizard": {"wood": 9, "stone": 8},
 }
+
+# build cost weight wood = 1, stone = 2
+# archer values equals to 10 or 100
+# cannon values equals to 15 or 150
+# wizard values equals to 25 or 250
+
+# ! all tower upgrade costs: lv1 (base + 60%) lv2(base + 80%) lv3 (base + 120%)
+# ? archer  upgrade lv1 (base + 60%) lv2(base + 80%) lv3 (base + 120%)
+# cannon values equals to 15 or 150
+# wizard values equals to 25 or 250
 
 towerUpgrades = {
     "archer": {
-        1: {"wood": 3, "stone": 2, "damage": 1.2, "range": 1.2, "speed": 1.2},
-        2: {"wood": 5, "stone": 4, "damage": 1.4, "range": 1.4, "speed": 1.4},
-        3: {"wood": 8, "stone": 6, "damage": 1.6, "range": 1.6, "speed": 1.6},
+        1: {
+            "wood": int(towerCosts["archer"]["wood"] * 1.6),
+            "stone": int(towerCosts["archer"]["stone"] * 1.6),
+            "damage": 1.3,
+            "range": 1.2,
+            "speed": 1.3,
+        },
+        2: {
+            "wood": int(towerCosts["archer"]["wood"] * 1.8),
+            "stone": int(towerCosts["archer"]["stone"] * 1.8),
+            "damage": 1.6,
+            "range": 1.4,
+            "speed": 1.6,
+        },
+        3: {
+            "wood": int(towerCosts["archer"]["wood"] * 2.2),
+            "stone": int(towerCosts["archer"]["stone"] * 2.2),
+            "damage": 2.0,
+            "range": 1.6,
+            "speed": 2.0,
+        },
     },
     "cannon": {
-        1: {"wood": 5, "stone": 3, "damage": 1.3, "range": 1.1, "speed": 1.2},
-        2: {"wood": 8, "stone": 5, "damage": 1.6, "range": 1.2, "speed": 1.4},
-        3: {"wood": 12, "stone": 8, "damage": 2.0, "range": 1.3, "speed": 1.6},
+        1: {
+            "wood": int(towerCosts["cannon"]["wood"] * 1.6),
+            "stone": int(towerCosts["cannon"]["stone"] * 1.6),
+            "damage": 1.4,
+            "range": 1.2,
+            "speed": 1.1,
+        },
+        2: {
+            "wood": int(towerCosts["cannon"]["wood"] * 1.8),
+            "stone": int(towerCosts["cannon"]["stone"] * 1.8),
+            "damage": 1.8,
+            "range": 1.3,
+            "speed": 1.3,
+        },
+        3: {
+            "wood": int(towerCosts["cannon"]["wood"] * 2.2),
+            "stone": int(towerCosts["cannon"]["stone"] * 2.2),
+            "damage": 2.4,
+            "range": 1.4,
+            "speed": 1.5,
+        },
     },
     "wizard": {
-        1: {"wood": 6, "stone": 4, "damage": 1.2, "range": 1.3, "speed": 1.3},
-        2: {"wood": 10, "stone": 7, "damage": 1.4, "range": 1.6, "speed": 1.6},
-        3: {"wood": 15, "stone": 10, "damage": 1.8, "range": 2.0, "speed": 2.0},
+        1: {
+            "wood": int(towerCosts["wizard"]["wood"] * 1.6),
+            "stone": int(towerCosts["wizard"]["stone"] * 1.6),
+            "damage": 1.3,
+            "range": 1.4,
+            "speed": 1.2,
+        },
+        2: {
+            "wood": int(towerCosts["wizard"]["wood"] * 1.8),
+            "stone": int(towerCosts["wizard"]["stone"] * 1.8),
+            "damage": 1.6,
+            "range": 1.8,
+            "speed": 1.4,
+        },
+        3: {
+            "wood": int(towerCosts["wizard"]["wood"] * 2.2),
+            "stone": int(towerCosts["wizard"]["stone"] * 2.2),
+            "damage": 2.0,
+            "range": 2.2,
+            "speed": 1.6,
+        },
     },
 }
 

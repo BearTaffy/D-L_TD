@@ -58,10 +58,10 @@ class WaveManager:
         self.isWaveActive = True
         self.waveStartTime = viz.tick()
 
-        self.creepsToSpawn = 5 + (2 * self.currentWave)
+        self.creepsToSpawn = 4 + (3 * self.currentWave)
 
-        if self.currentWave % 5 == 0:
-            self.difficultyMultiplier += 0.2
+        if self.currentWave % 3 == 0:
+            self.difficultyMultiplier += 0.15
 
         print(f"Wave {self.currentWave} started!")
 
@@ -98,7 +98,7 @@ class WaveManager:
 
 class BaseHealth:
     def __init__(self):
-        self.maxHealth = 100
+        self.maxHealth = 150
         self.health = self.maxHealth
         self.setupUI()
 
