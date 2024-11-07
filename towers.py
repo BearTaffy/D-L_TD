@@ -526,6 +526,8 @@ def toggleUpgradeMode():
         if towersPlace["tower"]:
             if upgradeMode and towersPlace["tower"].canUpgrade():
                 towersPlace["tower"].highlight(True, [0, 1, 0, 1])
+            else:
+                towersPlace["tower"].highlight(False)
 
 
 def attack(self, targetCreep):
