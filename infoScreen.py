@@ -57,7 +57,7 @@ def displayHowToPlayScreen():
     screen_elements.append(howToPlayTitle)
 
     rulesText = viz.addText(
-        "Rules and Controls:\n1. Use WASD to move.\n2. Defend your base from enemies.\n3. Collect wood and stone by standing by the tree and rocks.\n4. Press Q to go into top-down view to place towers.\n5. Select towers by pressing 1, 2, or 3.\n6. Press X to remove towers.\n7. Press U on a tower to upgrade it.",
+        "Rules and Controls:\n1. Use WASD to move.\n2. Defend your base from enemies.\n3. Collect wood and stone by standing by the tree and rocks.\n4. Press Q to go into top-down view to place towers.\n5. Select towers by pressing 1, 2, or 3.\n6. Press X to remove towers.\n7. Press U to toggle upgrade mode.",
         parent=viz.SCREEN,
     )
     rulesText.alignment(viz.ALIGN_CENTER_CENTER)
