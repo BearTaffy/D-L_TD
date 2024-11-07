@@ -196,8 +196,16 @@ def displayGameOverScreen():
     except:
         viz.logNotice("'img/game over.jpg' not found????????")
 
+    # Add a black background plane behind the score text
+    backgroundPlane = viz.addTexQuad(parent=viz.SCREEN)
+    backgroundPlane.setPosition(0.5, 0.5, 4)
+    backgroundPlane.setScale(5, 2, 1)  # Adjusted to be smaller
+    backgroundPlane.color(viz.BLACK)  # Black color for contrast
+    backgroundPlane.alpha(0.5)  # Semi-transparent for readability
+    screen_elements.append(backgroundPlane)
+
     scoreText = viz.addText(
-        f"You survived {wave_manager.currentWave -1} waves!", parent=viz.SCREEN
+        f"You survived {wave_manager.currentWave - 1} waves!", parent=viz.SCREEN
     )
     scoreText.alignment(viz.ALIGN_CENTER_CENTER)
     scoreText.fontSize(40)
