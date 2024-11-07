@@ -5,6 +5,8 @@ import random
 import infoScreen
 from creeps import Creep, creeps, creepPath, creepPathShort, creepTypes
 
+gameReady = False
+
 
 class WaveManager:
     def __init__(self):
@@ -19,12 +21,14 @@ class WaveManager:
         self.setupUI()
 
     def initializeGame(self):
+        global gameReady
         self.currentWave = 0
         self.creepsToSpawn = 0
         self.isWaveActive = False
         self.waveStartTime = viz.tick()
         self.lastSpawnTime = 0
         self.difficultyMultiplier = 1.0
+        gameReady = True
         self.updateUI()
 
     def setupUI(self):
@@ -140,26 +144,18 @@ class BaseHealth:
         self.updateUI()
 
     def takeDamage(self, damage):
+        global gameReady
         self.health -= damage
         if self.health <= 0:
             self.health = 0
             print("Game Over - Base Destroyed!")
             infoScreen.gameOver()
+            gameReady = False
         self.updateUI()
 
     def updateUI(self):
         status = f"HOME BASE\nHealth: {self.health}"
         self.panel.message(status)
-
-    def takeDamage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
-            print("Game Over - Base Destroyed!")
-            import infoScreen
-
-            infoScreen.gameOver()
-        self.updateUI()
 
 
 base_health = BaseHealth()
@@ -168,5 +164,6 @@ wave_manager = WaveManager()
 
 
 def updateWaveSystem():
-    wave_manager.update()
-    wave_manager.updateUI()
+    if gameReady:
+        wave_manager.update()
+        wave_manager.updateUI()
