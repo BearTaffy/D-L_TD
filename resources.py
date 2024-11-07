@@ -84,8 +84,8 @@ def start_collecting_wood():
             add_wood()  # Add stone every 3 seconds if in the area
 
     # Set new timers
-    wood_timer = vizact.ontimer(2, wood_collection_timer)
-    stone_timer = vizact.ontimer(3, stone_collection_timer)
+    wood_timer = vizact.ontimer(1, wood_collection_timer)
+    stone_timer = vizact.ontimer(2, stone_collection_timer)
 
 # Enter sensor function
 def onEnterSensor(e):
