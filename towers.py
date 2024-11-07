@@ -217,7 +217,8 @@ class Tower:
         if state:
             self.model.emissive(color)
             self.highlighted = True
-            self.upgradeCostText.visible(viz.ON)
+            # if upgradeMode:
+            #     self.upgradeCostText.visible(viz.ON)
         else:
             self.model.emissive([0, 0, 0, 1])
             self.highlighted = False
