@@ -5,8 +5,8 @@ import vizproximity
 from towers import robot
 
 
-wood_count = 10
-stone_count = 10
+wood_count = 15
+stone_count = 12
 collecting_wood = False
 collecting_stone = False
 tower_icons = []
@@ -151,8 +151,12 @@ def createTowerIcons():
         sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
         sprite.setPosition([0.95, 0.955 - i * 0.1, 0])  # Adjust position as needed
         sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
-        sprite.color(viz.RED if not check_resources() else viz.GREEN)  # Set initial color based on resources
-        sprite.alpha(0.5)  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
+        sprite.color(
+            viz.RED if not check_resources() else viz.GREEN
+        )  # Set initial color based on resources
+        sprite.alpha(
+            0.5
+        )  # Set opacity to 50% (0.0 = fully transparent, 1.0 = fully opaque)
         tower_icons.append(sprite)
 
         # Add the cost label next to the icon
@@ -163,7 +167,6 @@ def createTowerIcons():
         cost_label.fontSize(15)
         cost_label.color(viz.WHITE)
         tower_icons.append(cost_label)
-
 
 
 def updateTowerIcons():

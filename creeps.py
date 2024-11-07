@@ -62,26 +62,26 @@ class CreepType:
 
 
 creepTypes = {
-    "golem": CreepType(
-        model_path="models/creeps/small_golem.obj",
-        scale=(0.25, 0.25, 0.25),
-        health=150,
-        speed=0.08,
-        damage=15,
-    ),
     "scout": CreepType(
         model_path="models/creeps/gargoyle.osgb",
         scale=(0.15, 0.15, 0.15),
-        health=75,
-        speed=0.15,
-        damage=5,
+        health=45,
+        speed=0.12,
+        damage=8,
+    ),
+    "golem": CreepType(
+        model_path="models/creeps/small_golem.obj",
+        scale=(0.25, 0.25, 0.25),
+        health=120,
+        speed=0.1,
+        damage=12,
     ),
     "brute": CreepType(
         model_path="models/creeps/big_golem.obj",
         scale=(0.3, 0.3, 0.3),
-        health=250,
-        speed=0.06,
-        damage=25,
+        health=200,
+        speed=0.08,
+        damage=20,
     ),
 }
 

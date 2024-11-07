@@ -49,7 +49,7 @@ def displayHowToPlayScreen():
     backgroundPlane.alpha(0.5)  # Make it semi-transparent
     screen_elements.append(backgroundPlane)
 
-    howToPlayTitle = viz.addText('How to Play', parent=viz.SCREEN)
+    howToPlayTitle = viz.addText("How to Play", parent=viz.SCREEN)
     howToPlayTitle.alignment(viz.ALIGN_CENTER_TOP)
     howToPlayTitle.fontSize(50)
     howToPlayTitle.color(viz.WHITE)
@@ -162,8 +162,8 @@ def onHowToPlayButton():
 # Game Over/Reset
 def resetGameState():
 
-    resources.wood_count = 10
-    resources.stone_count = 10
+    resources.wood_count = 15
+    resources.stone_count = 12
     resources.update_resources()
 
     for towersPlace in towers.towersPlaces:
