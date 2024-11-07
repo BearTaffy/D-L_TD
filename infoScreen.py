@@ -6,6 +6,7 @@ import resources
 
 from waves import wave_manager, base_health
 from creeps import creeps
+from resources import wood_text, stone_text
 
 # Global variables to hold references to screen elements for easier removal
 screen_elements = []
@@ -143,6 +144,8 @@ def startGame():
     clearScreen()
     viz.MainWindow.clearcolor(viz.SKYBLUE)
     viz.logNotice("Game is starting...")
+    wood_text.visible(viz.ON)
+    stone_text.visible(viz.ON)
     wave_manager.initializeGame()
     base_health.reset()
     resetGameState()
