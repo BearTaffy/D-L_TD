@@ -14,5 +14,5 @@ turn all objects into osgb through vizard
 # Bugs
 
 ```
-going in and out of collection areas gives more resaurces
+
 ```
