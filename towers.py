@@ -110,6 +110,7 @@ towerUpgrades = {
 towersPlaces = []
 currentObject = None
 removalMode = False
+upgradeMode = False
 
 towerCoordinates = [
     [12.7, -1.0, 1.1],
@@ -152,6 +153,12 @@ removal_mode_text.fontSize(24)
 removal_mode_text.color(viz.RED)
 removal_mode_text.visible(viz.OFF)
 
+upgrade_mode_text = viz.addText("UPGRADE MODE", pos=[0.5, 0.9, 0], parent=viz.SCREEN)
+upgrade_mode_text.alignment(viz.ALIGN_CENTER_TOP)
+upgrade_mode_text.fontSize(24)
+upgrade_mode_text.color(viz.GREEN)
+upgrade_mode_text.visible(viz.OFF)
+
 
 class Tower:
     def __init__(self, model, projectileClass, towerType):
@@ -168,8 +175,14 @@ class Tower:
         self.levelText = viz.addText(f"Lvl {self.level}", parent=self.model)
         self.levelText.alignment(viz.ALIGN_CENTER_CENTER)
         self.levelText.setScale(0.5, 0.5, 0.5)
-        self.levelText.setPosition(0, 2, 0)
+        self.levelText.setPosition(0, 4, 0)
         self.levelText.billboard(viz.BILLBOARD_VIEW)
+
+        self.upgradeCostText = viz.addText("", pos=[0.8, 0.2, 0], parent=viz.SCREEN)
+        self.upgradeCostText.fontSize(20)
+        self.upgradeCostText.visible(viz.OFF)
+
+        self.updateUpgradeCostText()
 
         self.updateStats()
 
@@ -185,13 +198,30 @@ class Tower:
     def visible(self, state):
         self.model.visible(state)
 
-    def highlight(self, state):
+    def updateUpgradeCostText(self):
+        next_level = self.level + 1
+        if next_level <= 3:
+            costs = towerUpgrades[self.towerType][next_level]
+            text = f"Upgrade Costs:\nWood: {costs['wood']}\nStone: {costs['stone']}"
+
+            text += f"\n\nNext Level Stats:"
+            text += f"\nDamage: +{int((costs['damage'] - 1) * 100)}%"
+            text += f"\nRange: +{int((costs['range'] - 1) * 100)}%"
+            text += f"\nSpeed: +{int((costs['speed'] - 1) * 100)}%"
+
+            self.upgradeCostText.message(text)
+        else:
+            self.upgradeCostText.message("Max Level")
+
+    def highlight(self, state, color=[1, 0, 0, 1]):
         if state:
-            self.model.emissive([1, 0, 0, 1])
+            self.model.emissive(color)
             self.highlighted = True
+            self.upgradeCostText.visible(viz.ON)
         else:
             self.model.emissive([0, 0, 0, 1])
             self.highlighted = False
+            self.upgradeCostText.visible(viz.OFF)
 
     def update(self, currentTime):
         if currentTime - self.lastAttackTime >= self.attackCooldown:
@@ -247,7 +277,6 @@ class Tower:
     def upgrade(self):
         if not self.canUpgrade():
             return False
-
         next_level = self.level + 1
         costs = towerUpgrades[self.towerType][next_level]
 
@@ -264,11 +293,16 @@ class Tower:
                 vizact.sizeTo([1.0, 1.0, 1.0], time=0.1),
             )
         )
-
+        success = super().upgrade() if hasattr(super(), "upgrade") else True
+        if success:
+            self.updateUpgradeCostText()
+        toggleUpgradeMode()
+        toggleUpgradeMode()
         return True
 
     def remove(self):
         self.levelText.remove()
+        self.upgradeCostText.remove()
         self.model.remove()
 
 
@@ -349,6 +383,31 @@ def updateTowers():
             towersPlace["tower"].update(currentTime)
 
 
+def updateTowerHover():
+    if not upgradeMode or camMode != "downCam":
+        return
+
+    mouseState = viz.mouse.getPosition()
+    line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
+    planePoint = [0, -1, 0]
+    planeNormal = [0, 1, 0]
+    intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
+
+    for towersPlace in towersPlaces:
+        if towersPlace["tower"]:
+            towersPlace["tower"].upgradeCostText.visible(viz.OFF)
+
+    if intersectionPoint:
+        for towersPlace in towersPlaces:
+            if towersPlace["isPlaced"] and towersPlace["tower"]:
+                towerPosition = towersPlace["towersPlace"].getPosition()
+                distance = vizmat.Distance(towerPosition, intersectionPoint)
+                if distance < 0.5:
+                    tower = towersPlace["tower"]
+                    tower.upgradeCostText.visible(viz.ON)
+                    break
+
+
 def onMouseDown(button):
     global currentObject, removalMode
     if button == viz.MOUSEBUTTON_LEFT:
@@ -367,6 +426,26 @@ def onMouseDown(button):
                         if distance < 0.5:
                             removeTower(towersPlace)
                             break
+        elif upgradeMode:
+            mouseState = viz.mouse.getPosition()
+            line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
+            planePoint = [0, -1, 0]
+            planeNormal = [0, 1, 0]
+            intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
+
+            if intersectionPoint:
+                for towersPlace in towersPlaces:
+                    if towersPlace["isPlaced"] and towersPlace["tower"]:
+                        towerPosition = towersPlace["towersPlace"].getPosition()
+                        distance = vizmat.Distance(towerPosition, intersectionPoint)
+                        if distance < 0.5 and towersPlace["tower"].canUpgrade():
+                            towersPlace["tower"].upgrade()
+                            if towersPlace["tower"].canUpgrade():
+                                towersPlace["tower"].highlight(True, [0, 1, 0, 1])
+                            else:
+                                towersPlace["tower"].highlight(False)
+                            break
+
         elif currentObject:
             for towersPlace in towersPlaces:
                 if not towersPlace["isPlaced"]:
@@ -422,12 +501,30 @@ def removeTower(towersPlace):
 
 
 def toggleRemovalMode():
-    global removalMode
+    global removalMode, upgradeMode
+    if upgradeMode:
+        toggleUpgradeMode()
+
     removalMode = not removalMode
     removal_mode_text.visible(removalMode)
+
     for towersPlace in towersPlaces:
         if towersPlace["tower"]:
-            towersPlace["tower"].highlight(removalMode)
+            towersPlace["tower"].highlight(removalMode, [1, 0, 0, 1])
+
+
+def toggleUpgradeMode():
+    global upgradeMode, removalMode
+    if removalMode:
+        toggleRemovalMode()
+
+    upgradeMode = not upgradeMode
+    upgrade_mode_text.visible(upgradeMode)
+
+    for towersPlace in towersPlaces:
+        if towersPlace["tower"]:
+            if upgradeMode and towersPlace["tower"].canUpgrade():
+                towersPlace["tower"].highlight(True, [0, 1, 0, 1])
 
 
 def attack(self, targetCreep):
@@ -447,13 +544,18 @@ def onKeyDown(key):
     if key == "q":
         if removalMode:
             toggleRemovalMode()
+        if upgradeMode:
+            toggleUpgradeMode()
         changeCamera()
     elif key == " ":
         print(robot.getPosition())
     elif key == "x":
         if camMode == "downCam":
             toggleRemovalMode()
-    elif camMode == "downCam" and not removalMode:
+    elif key == "u":
+        if camMode == "downCam":
+            toggleUpgradeMode()
+    elif camMode == "downCam" and not removalMode and not upgradeMode:
         if key in ["1", "2", "3"]:
             if currentObject:
                 currentObject.remove()
@@ -481,23 +583,9 @@ def onKeyDown(key):
                 currentObject = Tower(model, projectile, towerType)
                 currentObject.visible(viz.ON)
                 updateObjectPosition()
-    if key == "u" and camMode == "downCam" and not removalMode:
-        mouseState = viz.mouse.getPosition()
-        line = viz.MainWindow.screenToWorld(mouseState[0], mouseState[1])
-        planePoint = [0, -1, 0]
-        planeNormal = [0, 1, 0]
-        intersectionPoint = intersect(line.begin, line.end, planePoint, planeNormal)
-
-        if intersectionPoint:
-            for towersPlace in towersPlaces:
-                if towersPlace["isPlaced"] and towersPlace["tower"]:
-                    towerPosition = towersPlace["towersPlace"].getPosition()
-                    distance = vizmat.Distance(towerPosition, intersectionPoint)
-                    if distance < 0.5:
-                        towersPlace["tower"].upgrade()
-                        break
 
 
 vizact.onupdate(0, updateTowers)
 vizact.onupdate(viz.PRIORITY_INPUT, updateObjectPosition)
 set_resource_update_callback(updateTowerIcons)
+vizact.onupdate(viz.PRIORITY_INPUT, updateTowerHover)

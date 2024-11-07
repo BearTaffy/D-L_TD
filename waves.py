@@ -60,7 +60,7 @@ class WaveManager:
 
         self.creepsToSpawn = 4 + (3 * self.currentWave)
 
-        if self.currentWave % 3 == 0:
+        if self.currentWave % 2 == 0:
             self.difficultyMultiplier += 0.15
 
         print(f"Wave {self.currentWave} started!")
@@ -82,14 +82,36 @@ class WaveManager:
             self.waveStartTime = current_time
             print(f"Wave {self.currentWave} complete!")
 
+    def creepPool(self):
+        if self.difficultyMultiplier < 1.3:
+            types = list(creepTypes.keys())[:1]
+        elif self.difficultyMultiplier >= 1.3:
+            types = list(creepTypes.keys())[:2]
+        elif self.difficultyMultiplier <= 1.6:
+            types = list(creepTypes.keys())[:-1]
+        else:
+            types = list(creepTypes.keys())
+        return types
+
     def spawnCreep(self):
         if self.creepsToSpawn > 0:
-            creep_type_name = random.choice(list(creepTypes.keys()))
-            creep_type = creepTypes[creep_type_name]
+            types = self.creepPool()
 
+            strongCreepChance = min(0.8, (self.difficultyMultiplier - 1.0) * 2)
+
+            if random.random() < strongCreepChance and len(types) > 1:
+                creepName = random.choice(types[len(types) // 2 :])
+            else:
+                creepName = random.choice(types)
+
+            creepType = creepTypes[creepName]
             path = creepPathShort if random.random() < 0.2 else creepPath
 
-            newCreep = Creep(path, creep_type)
+            newCreep = Creep(path, creepType)
+            newCreep.health = int(newCreep.health * self.difficultyMultiplier)
+            newCreep.maxHealth = newCreep.health
+            newCreep.damage = int(newCreep.damage * self.difficultyMultiplier)
+
             newCreep.model.setPosition(path[0])
 
             creeps.append(newCreep)
