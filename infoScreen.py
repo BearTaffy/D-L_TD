@@ -6,6 +6,7 @@ import resources
 
 from waves import wave_manager, base_health
 from creeps import creeps
+from resources import wood_text, stone_text
 
 # Global variables to hold references to screen elements for easier removal
 screen_elements = []
@@ -56,7 +57,7 @@ def displayHowToPlayScreen():
     screen_elements.append(howToPlayTitle)
 
     rulesText = viz.addText(
-        "Rules and Controls:\n1. Use WASD to move.\n2. Defend your base from enemies.\n3. Collect wood and stone by standing by the tree and rocks.\n4. Press Q to go into top-down view to place towers.\n5. Select towers by pressing 1, 2, or 3.\n6.Press X to remove towers.",
+        "Rules and Controls:\n1. Use WASD to move.\n2. Defend your base from enemies.\n3. Collect wood and stone by standing by the tree and rocks.\n4. Press Q to go into top-down view to place towers.\n5. Select towers by pressing 1, 2, or 3.\n6. Press X to remove towers.\n7. Press U on a tower to upgrade it.",
         parent=viz.SCREEN,
     )
     rulesText.alignment(viz.ALIGN_CENTER_CENTER)
@@ -143,6 +144,8 @@ def startGame():
     clearScreen()
     viz.MainWindow.clearcolor(viz.SKYBLUE)
     viz.logNotice("Game is starting...")
+    wood_text.visible(viz.ON)
+    stone_text.visible(viz.ON)
     wave_manager.initializeGame()
     base_health.reset()
     resetGameState()
@@ -196,8 +199,16 @@ def displayGameOverScreen():
     except:
         viz.logNotice("'img/game over.jpg' not found????????")
 
+    # Add a black background plane behind the score text
+    backgroundPlane = viz.addTexQuad(parent=viz.SCREEN)
+    backgroundPlane.setPosition(0.5, 0.5, 4)
+    backgroundPlane.setScale(5, 2, 1)  # Adjusted to be smaller
+    backgroundPlane.color(viz.BLACK)  # Black color for contrast
+    backgroundPlane.alpha(0.5)  # Semi-transparent for readability
+    screen_elements.append(backgroundPlane)
+
     scoreText = viz.addText(
-        f"You survived {wave_manager.currentWave -1} waves!", parent=viz.SCREEN
+        f"You survived {wave_manager.currentWave - 1} waves!", parent=viz.SCREEN
     )
     scoreText.alignment(viz.ALIGN_CENTER_CENTER)
     scoreText.fontSize(40)

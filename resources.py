@@ -18,13 +18,15 @@ manager.addTarget(vizproximity.Target(robot))
 wood_timer = None
 stone_timer = None
 
-wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.1, 0.9, 0], parent=viz.SCREEN)
+wood_text = viz.addText(f"Wood: {wood_count}", pos=[0.03, 0.95, 0], parent=viz.SCREEN)
 wood_text.fontSize(20)
 wood_text.color(viz.WHITE)
+wood_text.visible(viz.OFF)
 
-stone_text = viz.addText(f"Stone: {stone_count}", pos=[0.1, 0.85, 0], parent=viz.SCREEN)
+stone_text = viz.addText(f"Stone: {stone_count}", pos=[0.03, 0.90, 0], parent=viz.SCREEN)
 stone_text.fontSize(20)
 stone_text.color(viz.WHITE)
+stone_text.visible(viz.OFF)
 
 tree = viz.add("models/environment/tree.obj")
 tree.setPosition(-8.4, -1, -7.7)
@@ -47,6 +49,7 @@ def update_resources():
     stone_text.message(f"Stone: {stone_count}")
     if resource_update_callback:
         resource_update_callback()
+    updateTowerIcons()  # Update icon colors based on current resources
 
 
 def add_wood():
@@ -60,18 +63,29 @@ def add_wood():
 
 
 def start_collecting_wood():
-    # This will call add_wood every 2 seconds as long as collecting_wood is True
-    def wood_timer():
+    global wood_timer, stone_timer
+
+    # Clear any existing timers to avoid duplication
+    if wood_timer:
+        wood_timer.remove()
+        wood_timer = None
+
+    if stone_timer:
+        stone_timer.remove()
+        stone_timer = None
+
+    # Define a function for repeated collection
+    def wood_collection_timer():
         if collecting_wood:
-            add_wood()
+            add_wood()  # Add wood every 2 seconds if in the area
 
-    def stone_timer():
+    def stone_collection_timer():
         if collecting_stone:
-            add_wood()
+            add_wood()  # Add stone every 3 seconds if in the area
 
-    vizact.ontimer(2, wood_timer)
-    vizact.ontimer(3, stone_timer)
-
+    # Set new timers
+    wood_timer = vizact.ontimer(2, wood_collection_timer)
+    stone_timer = vizact.ontimer(3, stone_collection_timer)
 
 # Enter sensor function
 def onEnterSensor(e):
@@ -90,13 +104,12 @@ def onEnterSensor(e):
 def onExitSensor(e):
     global collecting_wood, wood_timer, collecting_stone, stone_timer
     if e.sensor.name == "Circle":
-        # viz.logNotice("Left wood collection area")
         collecting_wood = False
         if wood_timer:
             wood_timer.remove()
             wood_timer = None
+
     if e.sensor.name == "Circle2":
-        # viz.logNotice("Left stone collection area")
         collecting_stone = False
         if stone_timer:
             stone_timer.remove()
@@ -136,7 +149,7 @@ def createTowerIcons():
         # Add the tower icon
         icon = viz.addTexture(icon_path)
         sprite = viz.addTexQuad(texture=icon, parent=viz.SCREEN)
-        sprite.setPosition([0.85, 0.85 - i * 0.1, 0])  # Adjust position as needed
+        sprite.setPosition([0.95, 0.955 - i * 0.1, 0])  # Adjust position as needed
         sprite.setScale([0.5, 0.5, 0.5])  # Ensure all icons are the same size
         sprite.color(
             viz.RED if not check_resources() else viz.GREEN
@@ -150,22 +163,33 @@ def createTowerIcons():
         costs = towerCosts[tower_type]
         cost_text = f"Wood: {costs['wood']} Stone: {costs['stone']}"
         cost_label = viz.addText(cost_text, parent=viz.SCREEN)
-        cost_label.setPosition([0.89, 0.85 - i * 0.1, 0])  # Position next to the icon
+        cost_label.setPosition([0.82, 0.95 - i * 0.1, 0])  # Position next to the icon
         cost_label.fontSize(15)
         cost_label.color(viz.WHITE)
         tower_icons.append(cost_label)
 
 
 def updateTowerIcons():
-    for icon in tower_icons:
-        if check_resources():
-            icon.color(viz.GREEN)
-            icon.alpha(1.0)  # Make it fully opaque if there are enough resources
+    from towers import towerCosts  # Import towerCosts here to get individual costs
+    
+    # Loop over icons and cost labels in pairs (icon and label for each tower)
+    for i in range(0, len(tower_icons), 2):
+        icon = tower_icons[i]
+        label = tower_icons[i + 1]  # Get the associated label
+        tower_type = ["archer", "cannon", "wizard"][i // 2]
+        costs = towerCosts[tower_type]
+        
+        # Check if the player has enough resources for this tower type
+        has_resources = wood_count >= costs['wood'] and stone_count >= costs['stone']
+        
+        if has_resources:
+            icon.color(viz.GREEN)  # Make icon green if resources are sufficient
+            label.color(viz.GREEN)  # Make label green to match icon
+            icon.alpha(1.0)  # Fully opaque
         else:
-            icon.color(viz.RED)
-            icon.alpha(
-                0.5
-            )  # Make it semi-transparent if there are not enough resources
+            icon.color(viz.RED)  # Make icon red if resources are insufficient
+            label.color(viz.RED)  # Make label red to match icon
+            icon.alpha(0.5)  # Semi-transparent
 
 
 # Add circular sensor around the tree
