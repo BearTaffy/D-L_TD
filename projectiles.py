@@ -83,8 +83,8 @@ class CannonballProjectile(Projectile):
         super().__init__(
             startPos,
             target,
-            speed=0.6,
-            damage=45,
+            speed=0.4,
+            damage=35,
             model="models/projectiles/cannon_ball.obj",
             sound="audio/cannon.mp3",
         )
